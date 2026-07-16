@@ -683,28 +683,38 @@ tab_response <- function(D, xs, y) {
     Reduce(rbind, .)
 }
 
-default_sig <- function(y_position, xmin, xmax, model_pvalue, model_stars, tip_length = 0.03, size = 1, textsize = 10, show_values = TRUE, hide_ns = TRUE) {
+default_sig <- function(y_position, xmin, xmax, model_pvalue, model_stars, tip_length = 0.03, size = 1, textsize = 10, color = "black", show_values = TRUE, hide_ns = TRUE) {
   if (show_values){
-    list(y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = paste0("p = ", format(model_pvalue, digits = 5), model_stars), tip_length = tip_length, size = size, textsize = textsize)
+    if (model_stars == "") { model_pvalue <- "ns"}
+    if (hide_ns && model_pvalue == "ns") {
+      list(y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = "", tip_length = 0, size = 0, textsize = 0, color = "black")
+    } else {
+      list(y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = paste0("P=", format(model_pvalue, digits = 2)), tip_length = tip_length, size = size, textsize = textsize, color = color) 
+    }
   } else {
     if (model_stars == "") { model_stars <- "ns"}
     if (hide_ns & model_stars == "ns") { 
-      list(y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = "", tip_length = 0, size = 0, textsize = 0)
+      list(y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = "", tip_length = 0, size = 0, textsize = 0, color = "black")
     } else {
-      list(y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = model_stars, tip_length = tip_length, size = size, textsize = textsize)
+      list(y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = model_stars, tip_length = tip_length, size = size, textsize = textsize, color = color)
     }
   }
 }
 
-default_sig_data <- function(data, y_position, xmin, xmax, model_pvalue, model_stars, tip_length = 0.03, size = 1, textsize = 10, show_values = TRUE, hide_ns = TRUE) {
+default_sig_data <- function(data, y_position, xmin, xmax, model_pvalue, model_stars, tip_length = 0.03, size = 1, textsize = 10, color = "black", show_values = TRUE, hide_ns = TRUE) {
   if (show_values) {
-    list(data = data, y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = paste0("p = ", format(model_pvalue, digits = 5), model_stars), tip_length = tip_length, size = size, textsize = textsize)
+    if (model_stars == "") { model_pvalue <- "ns"}
+    if (hide_ns & model_pvalue == "ns") {
+      list(data = data, y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = "", tip_length = 0, size = 0, textsize = 0, color = "black")
+    } else {
+      list(data = data, y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = paste0("P=", format(model_pvalue, digits = 2)), tip_length = tip_length, size = size, textsize = textsize, color = color) 
+    }
   } else {
     if (model_stars == "") { model_stars <- "ns"}
     if (hide_ns & model_stars == "ns") { 
-      list(data = data, y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = "", tip_length = 0, size = 0, textsize = 0)
+      list(data = data, y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = "", tip_length = 0, size = 0, textsize = 0, color = "black")
     } else {
-      list(data = data, y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = model_stars, tip_length = tip_length, size = size, textsize = textsize)
+      list(data = data, y_position = y_position, xmin = c(xmin), xmax = c(xmax), annotation = model_stars, tip_length = tip_length, size = size, textsize = textsize, color = color)
     }
   }
 }
@@ -717,9 +727,9 @@ add_significance_annotation <- function(p, label, pos, start, end, size_text = 1
   } else if (label == "*") {
     gap <- 0.2
   } else if (label == "****") {
-    gap <- 0.7
+    gap <- 1
   } else {
-    gap <- 0.3
+    gap <- 1
   }
   p +
     annotate("text", x = (pos + gap), y = (start + end)/2.1, label = label, size = size_text) +

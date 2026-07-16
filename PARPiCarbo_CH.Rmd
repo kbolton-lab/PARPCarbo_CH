@@ -14,11 +14,13 @@ output:
     toc_float:
       collapsed: false
       smooth_scroll: false
+  pdf_document:
+    toc: true
+    toc_depth: '2'
 ---
 
-
 ```{r setup, include=TRUE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(dev = "svg")
+knitr::opts_chunk$set(cache = TRUE)
 
 library(tidyverse)
 library(data.table)
@@ -28,15 +30,22 @@ library(table1)
 # Statistics
 library(emmeans)
 library(afex)
+library(rstatix)
+library(survival)
+library(survminer)
 
 # Plots
 library(ggsci)
 library(cowplot)
+library(ComplexHeatmap)
+
+# Reference
+library(BSgenome.Hsapiens.UCSC.hg38)
 
 source("utils/toolbox.R")
 
 data_file_path <- "data/"
-figures_save_path <- "figures/"
+figures_save_path <- "final_figures/"
 ```
 
 ## Load Data
@@ -47,6 +56,8 @@ msk_df <- fread(paste0(data_file_path, "msk_df.minimum.csv"))
 # PARP Carbo Data
 parp_carbo_df <- fread(paste0(data_file_path, "parp_carbo_df.minimum.tsv"))
 timepoints <- fread(paste0(data_file_path, "timepoints.minimum.csv"))
+treatment_naive_pre <- fread(paste0(data_file_path, "treatment_naive_pre.csv"))
+drug_info <- fread(paste0(data_file_path, "msk_drug_info.csv"))
 
 # MoChA Data
 mocha_df <- fread(paste0(data_file_path, "mocha_df.minimum.csv"))
@@ -87,28 +98,16 @@ Not_Paired_DEID = c("145068", "1517714", "1547582", "1573250", "1561639", "16270
 Samples_Less_Than_30_Days_Apart = c("1651767", "1699017", "1748202", "1795350", "2130036", "390174", "934203")
 ```
 
-## Load Figures
-```{r load_figures, include=TRUE, message = FALSE, warning = FALSE}
-# Figure Images
-Figure1_MSK <- paste0(figures_save_path, "Figure1_MSK.png")
-Figure2_PARP <- paste0(figures_save_path, "Figure2_PARP.png")
-Figure4_Mouse <- paste0(figures_save_path, "Figure4_Mouse.png")
-Figure4_Blot <- paste0(figures_save_path, "Figure4_Blot.png")
-Figure6_Mouse <- paste0(figures_save_path, "Figure6_Mouse.png")
-```
-
 ## Pre-defined Variables
 ```{r pre-defined}
 msk_top_10_genes <- c("DNMT3A", "TET2", "PPM1D", "ASXL1", "TP53", "CHEK2", "ATM", "JAK2", "SF3B1", "SRSF2")
 gene_list <- c("DNMT3A", "TET2", "ASXL1", "PPM1D", "TP53", "CHEK2", "JAK2", "SF3B1", "SRSF2")
 HRD_genes = c('ATM', 'BRCA1', 'BRCA2', 'BRIP1', 'CHEK2', 'RAD51D')
-treatment_colors = c('No Treatment' = '#BC3C29FF', 'PARPi' = '#E18727FF', 'Carboplatin' = '#0072B2FF')
-```
+treatment_colors = c('Healthy' = '#BC3C29FF', 'PARPi' = '#E18727FF', 'Carboplatin' = '#0072B2FF')
 
-```{r plot_variables}
 panel_theme_basic <- theme_bw() + theme(
     panel.border = element_blank(),
-    legend.title = element_blank(),
+    legend.title = element_text(size = 24),
     legend.key.size = unit(5, "mm"),
     legend.text = element_text(size = 24),
     legend.position = "top",
@@ -116,6 +115,7 @@ panel_theme_basic <- theme_bw() + theme(
     plot.subtitle = element_text(hjust = 0.5, size = 22),
     plot.title = element_text(face = "bold", hjust = 0, vjust = -2, size = 22),
     panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
     strip.background = element_blank(),
     strip.text = element_text(size = 24),
     axis.text.y = element_text(size = 24),
@@ -126,19 +126,34 @@ panel_theme_basic <- theme_bw() + theme(
 )
 ```
 
+## Add Germline and Pre-Treatment Status
+```{r germline_pre-treatment_status}
+timepoints <- timepoints %>%
+    select(-HRD) %>%
+    left_join(
+        table_demographics %>% select(DEID, HRD, HRD_Single),
+        by = c("DeID" = "DEID")
+    )
+
+# Additional identification of treatment information for each patient
+table_demographics <- table_demographics %>%
+    left_join(treatment_naive_pre)
+```
+
 # Set Reference Variables
 ```{r reference_variables}
-timepoints$Cohort <- factor(timepoints$Cohort, levels = c("No Treatment", "Carboplatin", "PARPi"))
+timepoints$Cohort <- factor(timepoints$Cohort, levels = c("Healthy", "Carboplatin", "PARPi"))
 timepoints$Gene <- factor(timepoints$Gene, levels = c("TP53", "PPM1D", "CHEK2", "DNMT3A", "TET2", "ASXL1", "SF3B1", "SRSF2", "JAK2"))
 timepoints$Drug <- factor(timepoints$Drug, levels = c("No Treatment", "Carboplatin", "Olaparib", "Niraparib", "Rucaparib", "Talazoparib"))   
 timepoints$NoTx_Cohort <- factor(timepoints$NoTx_Cohort, levels = c("No Prior Treatment - No Treatment", "Prior Treatment - No Treatment", "No Prior Treatment - Carboplatin", "Prior Treatment - Carboplatin", "No Prior Treatment - PARPi", "Prior Treatment - PARPi"))
 timepoints$HRD <- factor(timepoints$HRD, levels = c("No Germline", "HRD Germline", "Other Germline", "Missing"))
+timepoints$HRD_Single <- factor(timepoints$HRD_Single, levels = c("No Germline", "ATM", "BRCA1", "BRCA2", "CHEK2", "RAD51D", "Other Germline", "Missing"))
 
-mocha_timepoints$Cohort <- factor(mocha_timepoints$Cohort, levels = c("No Treatment", "Carboplatin", "PARPi", "CarboplatinPARPi"))
+mocha_timepoints$Cohort <- factor(mocha_timepoints$Cohort, levels = c("Healthy", "Carboplatin", "PARPi", "CarboplatinPARPi"))
 ```
 
 # Figure 1B - Proportion of Mutations per Gene in MSK Data
-```{r fig1b, message = FALSE, warning = FALSE, fig.width=15, fig.height=6}
+```{r fig1b, message = FALSE, warning = FALSE, results="hide"}
 model_parp_gene <- map_dfr(msk_top_10_genes, function(gene){
     glm(
         formula = as.formula(paste(gene, "~ Treatment")),
@@ -165,7 +180,8 @@ fig1b <- map_dfr(msk_top_10_genes, function(gene){
     mutate(Proportion = n / total) %>%
     mutate(
         Gene = ifelse(Gene %in% c("TP53", "PPM1D", "CHEK2"), paste0("<b>", Gene, "</b>"), paste0(Gene)),
-        Treatment = factor(Treatment, levels = c("PARP Inhibitor", "XRT or Systemic Therapy", "No Treatment", "Other Treatment"))
+        #Treatment = factor(Treatment, levels = c("PARP Inhibitor", "XRT or Systemic Therapy", "No Treatment", "Other Treatment")),
+        Treatment = factor(Treatment, levels = c("No Treatment", "XRT or Systemic Therapy", "PARP Inhibitor", "Other Treatment"))
     ) %>%
     ggplot(
         aes(
@@ -183,25 +199,27 @@ fig1b <- map_dfr(msk_top_10_genes, function(gene){
     panel_theme_basic +
     theme(
         axis.text.x = ggtext::element_markdown(angle = 45, hjust = 1),
-        legend.position = c(0.7, 0.6),
+        legend.position = c(0.7, 0.75),
         legend.direction = "vertical",
         plot.margin = unit(c(0, 0, 0, 1), "pt")
     ) +
     scale_color_nejm() +
-    scale_fill_nejm() +
+    scale_fill_manual(values = c("No Treatment" = "#BC3C29FF", "PARP Inhibitor" = "#E18727FF", "XRT or Systemic Therapy" = "#0072B2FF")) +
     scale_y_continuous(labels = scales::percent_format(), limits = c(0, 0.17), expand = c(0, 0)) +
-    do.call(geom_signif, default_sig(0.12, 0.75, 1, model_parp_gene$p.value[1], model_parp_gene$p.stars[1], show_values = FALSE, hide_ns = TRUE)) +
-    do.call(geom_signif, default_sig(0.13, 0.75, 1.25, model_parp_gene$p.value[2], model_parp_gene$p.stars[2], show_values = FALSE, hide_ns = TRUE)) +
-    do.call(geom_signif, default_sig(0.06, 2.75, 3, model_parp_gene$p.value[3], model_parp_gene$p.stars[3], show_values = FALSE, hide_ns = TRUE)) +
-    do.call(geom_signif, default_sig(0.07, 2.75, 3.25, model_parp_gene$p.value[4], model_parp_gene$p.stars[4], show_values = FALSE, hide_ns = TRUE)) +
-    do.call(geom_signif, default_sig(0.14, 1.75, 2, model_parp_gene$p.value[5], model_parp_gene$p.stars[5], show_values = FALSE, hide_ns = TRUE, size = 1)) +
-    do.call(geom_signif, default_sig(0.155, 1.75, 2.25, model_parp_gene$p.value[6], model_parp_gene$p.stars[6], show_values = FALSE, hide_ns = TRUE, size = 1)) +
-    do.call(geom_signif, default_sig(0.08, 3.75, 4, model_parp_gene$p.value[9], model_parp_gene$p.stars[9], show_values = FALSE, hide_ns = TRUE, size = 1)) +
-    do.call(geom_signif, default_sig(0.095, 3.75, 4.25, model_parp_gene$p.value[10], model_parp_gene$p.stars[10], show_values = FALSE, hide_ns = TRUE, size = 1)) +
-    do.call(geom_signif, default_sig(0.03, 4.75, 5, model_parp_gene$p.value[11], model_parp_gene$p.stars[11], show_values = FALSE, hide_ns = TRUE)) +
-    do.call(geom_signif, default_sig(0.04, 4.75, 5.25, model_parp_gene$p.value[12], model_parp_gene$p.stars[12], show_values = FALSE, hide_ns = TRUE))
+    do.call(geom_signif, default_sig(0.12, 1, 1.25, model_parp_gene$p.value[1], model_parp_gene$p.stars[1], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.13, 0.75, 1.25, model_parp_gene$p.value[2], model_parp_gene$p.stars[2], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.06, 3, 3.25, model_parp_gene$p.value[3], model_parp_gene$p.stars[3], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.07, 2.75, 3.25, model_parp_gene$p.value[4], model_parp_gene$p.stars[4], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.14, 2, 2.25, model_parp_gene$p.value[5], model_parp_gene$p.stars[5], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.155, 1.75, 2.25, model_parp_gene$p.value[6], model_parp_gene$p.stars[6], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.08, 4, 4.25, model_parp_gene$p.value[9], model_parp_gene$p.stars[9], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.095, 3.75, 4.25, model_parp_gene$p.value[10], model_parp_gene$p.stars[10], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.03, 5, 5.25, model_parp_gene$p.value[11], model_parp_gene$p.stars[11], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.04, 4.75, 5.25, model_parp_gene$p.value[12], model_parp_gene$p.stars[12], show_values = TRUE, hide_ns = TRUE, textsize = 6))
 fig1b
-ggsave(paste0(figures_save_path, "Figure1B_ProportionMutatedGenes.png"), fig1b, width = 8, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure1B_ProportionMutatedGenes.pdf"), width = 8, height = 8)
+fig1b
+dev.off()
 ```
 
 # Figure 1C and 1D - Statistics
@@ -219,7 +237,7 @@ msk_df %>%
     group_by(Treatment) %>%
     summarise(n = sum(DDR_CH, na.rm = TRUE), total = n()) %>%
     mutate(percent = n / total)
-
+    
 model_list <- list(
     "Unadjusted" = DDR_CH ~ ind_parp_inhibitor + ind_cytotoxic_therapy + ind_radiotherapy + XRT + ind_immune_therapy + ind_non_parp_targeted_therapy + age + smoke_bin + race_b + timedx_impact,
     "Adjusted for Cytotoxic Therapy" = DDR_CH ~ ind_parp_inhibitor + ind_platinum + ind_topoisomerase_ii_inh + ind_microtubule_damaging + ind_topoisomerase_i_inhi + ind_taxane + ind_antimetabolite + ind_alkylating_agent + ind_radiotherapy + ind_targeted_therapy + XRT + ind_immune_therapy + ind_non_parp_targeted_therapy + age + smoke_bin + race_b + timedx_impact,
@@ -239,8 +257,8 @@ msk_models <- map(model_list, function(formula){
 })
 ```
 
-# Figure 1C - Regression Analysis of Therapy on DDR CH Mutations
-```{r fig1c, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+# Figure 1C - Logistic Regression Analysis of Therapy on DDR CH Mutations
+```{r fig1c, message = FALSE, warning = FALSE, results="hide"}
 fig1c <- msk_models$Unadjusted %>%
     filter(str_detect(term, "ind_|XRT")) %>%
     mutate(
@@ -271,9 +289,9 @@ fig1c <- msk_models$Unadjusted %>%
             fill = term
         )
     ) +
-    geom_point(position = position_dodge(width = 0.3), size = 3) +
-    geom_errorbar(position = position_dodge(width = 0.3), width = 0.1, linewidth = 2) +
-    geom_text(data = . %>% filter(term != "PARP Inhibitor\n(10/54)"), aes_string(label = "p.stars", vjust = -0.7), size = 8, position = position_dodge(width = 0.8), color = "black") +
+    geom_point(position = position_dodge(width = 0.3), size = 5) +
+    geom_errorbar(position = position_dodge(width = 0.3), width = 0.2, linewidth = 1) +
+    geom_text(data = . %>% filter(term != "PARP Inhibitor\n(10/54)"), aes_string(label = "p.label", vjust = -0.7), size = 8, position = position_dodge(width = 0.8), color = "black") +
     geom_text(data = . %>% filter(term == "PARP Inhibitor\n(10/54)"), aes(label = p.label, vjust = -0.7), size = 8, position = position_dodge(width = 0.8), color = "black") +
     geom_hline(yintercept = 1, color = "black", linetype = "solid") +
     coord_flip() +
@@ -287,18 +305,22 @@ fig1c <- msk_models$Unadjusted %>%
     panel_theme_basic +
     theme(
         legend.position = "none",
-        panel.grid.minor = element_line(color = alpha("grey", 0.8), size = 0.5, linetype = "solid"),
-        axis.text.x = ggtext::element_markdown(size = 18)
+        #panel.grid.minor = element_line(color = alpha("grey", 0.8), size = 0.5, linetype = "solid"),
+        panel.grid.major.x = element_line(color = alpha("grey", 0.8), size = 0.5, linetype = "solid"),
+        axis.text.x = ggtext::element_markdown(size = 18),
+        #axis.text.y = element_text(size = 18)
     )
 fig1c
-ggsave(paste0(figures_save_path, "Figure1C_Therapy_DDR_CH_OR.png"), fig1c, width = 10, height = 10, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure1C_Therapy_DDR_CH_OR.pdf"), width = 10, height = 10)
+fig1c
+dev.off()
 ```
 
-# Figure 1D - Regression Analysis of PARP Inhibitor on DDR CH Mutations Adjusted
+# Figure 1D - Logistic Regression Analysis of PARP Inhibitor on DDR CH Mutations Adjusted
 ```{r fig1d, message = FALSE, warning = FALSE, fig.width=16, fig.height=6}
 fig1d <- rbind(
-            msk_models$`Adjusted for Cytotoxic Therapy` %>% filter(term == "ind_parp_inhibitor"),
-            msk_models$`Adjusted for Amount of Cytotoxic Therapy` %>% filter(term == "pct_parp_inhibitor")
+        msk_models$`Adjusted for Cytotoxic Therapy` %>% filter(term == "ind_parp_inhibitor"),
+        msk_models$`Adjusted for Amount of Cytotoxic Therapy` %>% filter(term == "pct_parp_inhibitor")
     ) %>%
     mutate(
         term = case_when(
@@ -318,8 +340,8 @@ fig1d <- rbind(
             fill = term
         )
     ) +
-    geom_point(position = position_dodge(width = 0.3), size = 3) +
-    geom_errorbar(position = position_dodge(width = 0.3), width = 0.1, size = 2) +
+    geom_point(position = position_dodge(width = 0.3), size = 5) +
+    geom_errorbar(position = position_dodge(width = 0.3), width = 0.1, size = 1.5) +
     geom_text(aes_string(label = "p.label", vjust = -0.7), size = 8, position = position_dodge(width = 0.8), color = "black") +
     geom_hline(yintercept = 1, color = "black", linetype = "solid") +
     coord_flip() +
@@ -333,26 +355,88 @@ fig1d <- rbind(
     panel_theme_basic +
     theme(
         legend.position = "none",
-        panel.grid.minor = element_line(color = alpha("grey", 0.8), size = 0.5, linetype = "solid")
-        #axis.text.x = ggtext::element_markdown(size = 17)
+        #panel.grid.minor = element_line(color = alpha("grey", 0.8), size = 0.5, linetype = "solid"),
+        panel.grid.major.x = element_line(color = alpha("grey", 0.8), size = 0.5, linetype = "solid"),
+        axis.text.x = ggtext::element_markdown(size = 18),
+        #axis.text.y = element_text(size = 18)
     )
 fig1d
-ggsave(paste0(figures_save_path, "Figure1D_Therapy_DDR_CH_Adjusted_OR.png"), fig1d, width = 10, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure1D_Therapy_DDR_CH_Adjusted_OR.pdf"), width = 10, height = 8)
+fig1d
+dev.off()
 ```
 
-# Figure 2B - Proportion of Mutations per Gene
-```{r fig2b, message = FALSE, warning = FALSE, fig.width=15, fig.height=6}
-num_mutations_per_person <- parp_carbo_df %>%
-    group_by(DeID) %>%
-    filter(whichdraw == max(whichdraw) & whichdraw > 1) %>%               # Only use the last draw if there are multiple draws
-    group_by(DeID, Gene, anytreatment) %>%
-    summarise(n = sum(putative_driver)) %>%
+# Figure 2B - Pre-Treatment VAF Bin Mutation Bar Plot
+```{r fig2b, fig.width=7, fig.height=7.6}
+df_to_plot <- parp_carbo_df %>%
+    filter(average_AF >= 0.002) %>% # Filter out mutations with VAF < 0.2% since these are unlikely to be true positives and would make the plot hard to read
+    filter(Gene != "") %>%
+    filter(whereincycle == "pre") %>%
+    mutate(
+        vaf_bin = case_when(
+            average_AF < 0.002 ~ "<0.2% VAF",
+            average_AF >= 0.002 & average_AF < 0.005 ~ "0.2-0.5% VAF",
+            average_AF >= 0.005 & average_AF < 0.01 ~ "0.5-1% VAF", 
+            average_AF >= 0.01 & average_AF < 0.05 ~ "1-5% VAF",
+            average_AF >= 0.05 ~ ">=5% VAF"
+        )
+    ) %>%
+    group_by(Gene, vaf_bin) %>%
+    summarise(n = n()) %>%
+    group_by(Gene) %>%
+    mutate(
+        total = sum(n),
+        percentage = (n / total) * 100,
+        vaf_bin = factor(vaf_bin, levels = c(">=5% VAF", "1-5% VAF", "0.5-1% VAF", "0.2-0.5% VAF", "<0.2% VAF")),
+        Gene = factor(Gene, levels = c(gene_list))
+    )
+
+fig2b <- df_to_plot %>%
+    ggplot(
+        aes(
+            x = Gene,
+            y = percentage,
+            fill = vaf_bin
+        )
+    ) +
+    geom_bar(stat = "identity") +
+    labs(
+        x = "",
+        y = "Percentage of Mutations at Baseline",
+        fill = "VAF Bin"
+    ) +
+    panel_theme_basic +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1, face = "italic"),
+        plot.margin = margin(0, 1, 0, 1, "cm"),
+        legend.text = element_text(size = 18),
+        legend.title = element_blank()
+    ) +
+    scale_fill_nejm()
+fig2b
+pdf(paste0(figures_save_path, "Figure2B_VAFBinMutationBarPlot.pdf"), width = 8, height = 8)
+fig2b
+dev.off()
+```
+
+# Figure 2C - Proportion of Mutations per Gene Naive-Treatment
+```{r fig2c_naive-treatment, message = FALSE, warning = FALSE, fig.width=15, fig.height=6}
+num_mutations_per_person_naive <- parp_carbo_df %>%
+    filter(treatment == "No Treatment") %>%
+    filter(whereincycle == "pre") %>%   # We want to get the pre-treatment for people without any treatment
+    group_by(DeID, Gene) %>%
+    summarise(n = sum(putative_driver), .groups = "drop") %>%
     filter(Gene != "") %>%
     pivot_wider(names_from = Gene, values_from = n, values_fill = 0) %>%
     ungroup()
 
-mut_table <- table_demographics %>%
-    left_join(num_mutations_per_person, by = c("DEID" = "DeID")) %>%
+mut_table_naive <- table_demographics %>%
+    mutate(treatment_before_pre_sample = ifelse(is.na(treatment_before_pre_sample), manual_classification, treatment_before_pre_sample)) %>%
+    filter(treatment_before_pre_sample == "No Treatment") %>%
+    left_join(
+        num_mutations_per_person_naive,
+        by = c("DEID" = "DeID")
+    ) %>%
     mutate(
         anytreatment = case_when(
             fromwhere == "G1 Therapeutics" ~ "Treatment",
@@ -366,37 +450,225 @@ mut_table <- table_demographics %>%
 
 # Logistic Regression for DDR Mutations
 glm(
-    data = mut_table %>% mutate(DDR_Mutations = ifelse(PPM1D == 1 | TP53 == 1 | CHEK2 == 1, 1, 0)),
+    data = mut_table_naive %>% mutate(DDR_Mutations = ifelse(PPM1D == 1 | TP53 == 1 | CHEK2 == 1, 1, 0)),
     formula = DDR_Mutations ~ anytreatment + AGE + SEX + RACE,
     family = binomial(link = "logit")
 ) %>% sjPlot::get_model_data(type = "est")
 
-model_treatment_gene <- map_dfr(gene_list, function(gene){
+model_treatment_gene_naive <- map_dfr(gene_list, function(gene){
+    print(gene)
     glm(
-        data = mut_table,
+        data = mut_table_naive,
         formula = as.formula(paste(gene, "~ anytreatment + AGE + SEX + RACE")),
         family = binomial(link = "logit")
     ) %>%
         sjPlot::get_model_data(type = "est") %>%
         mutate(Gene = gene)
 })
-model_treatment_gene <- model_treatment_gene %>% filter(term == "anytreatmentTreatment")
+model_treatment_gene_naive <- model_treatment_gene_naive %>% filter(term == "anytreatmentTreatment")
 
-fig2b <- mut_table %>%
+naive_treatment_prop <- mut_table_naive %>%
     group_by(anytreatment) %>%
     dplyr::select(-AGE, -SEX) %>%
     summarise_if(is.numeric, sum, na.rm = TRUE) %>%
     pivot_longer(cols = -c(anytreatment), names_to = "Gene", values_to = "n") %>%
     group_by(anytreatment, Gene) %>%
     left_join(
-        mut_table %>%
+        mut_table_naive %>%
             group_by(anytreatment) %>%
             summarise(total_patients = n())
     ) %>%
     mutate(
         Proportion = n / total_patients,
         Gene = factor(Gene, levels = c(gene_list)),
-        Treatment = factor(anytreatment, levels = c("No Treatment", "Treatment"))
+        Treatment = ifelse(anytreatment == "Treatment", "No Genotoxic Treatment", "Untreated"),
+        Treatment = factor(Treatment, levels = c("Untreated", "No Genotoxic Treatment"))
+    ) %>%
+    rowwise() %>%
+    mutate(
+        # Using exact binomial confidence intervals
+        ci_data = list(if(total_patients > 0) {
+            binom_test <- binom.test(n, total_patients, conf.level = 0.95)
+            tibble(
+                lower_ci = binom_test$conf.int[1],
+                upper_ci = binom_test$conf.int[2]
+            )
+        } else {
+            tibble(lower_ci = 0, upper_ci = 0)
+        }),
+        lower_ci = ci_data$lower_ci,
+        upper_ci = ci_data$upper_ci
+    ) %>%
+    select(-ci_data) %>%
+    ungroup()
+```
+
+# Figure 2C - Proportion of Mutations per Gene Pre-Treatment
+```{r fig2c_pre-treatment, message = FALSE, warning = FALSE, fig.width=15, fig.height=6}
+num_mutations_per_person_pre <- parp_carbo_df %>%
+    filter(whereincycle == "pre") %>%
+    group_by(DeID, Gene, anytreatment) %>%
+    summarise(n = sum(putative_driver)) %>%
+    filter(Gene != "") %>%
+    pivot_wider(names_from = Gene, values_from = n, values_fill = 0) %>%
+    ungroup()
+
+mut_table_pre <- table_demographics %>%
+    left_join(num_mutations_per_person_pre, by = c("DEID" = "DeID")) %>%
+    mutate(
+        anytreatment = case_when(
+            fromwhere == "G1 Therapeutics" ~ "Treatment",
+            fromwhere == "MSK" ~ "Treatment",
+            fromwhere == "Carlos" ~ "No Treatment",
+            fromwhere == "Ovarian" ~ "Treatment"
+        )
+    ) %>%
+    group_by(DEID, AGE, SEX, RACE, anytreatment) %>%
+    summarise_if(is.numeric, function(x) sum(x != 0, na.rm = TRUE))
+
+# Logistic Regression for DDR Mutations
+glm(
+    data = mut_table_pre %>% mutate(DDR_Mutations = ifelse(PPM1D == 1 | TP53 == 1 | CHEK2 == 1, 1, 0)),
+    formula = DDR_Mutations ~ anytreatment + AGE + SEX + RACE,
+    family = binomial(link = "logit")
+) %>% sjPlot::get_model_data(type = "est")
+
+model_treatment_gene_pre <- map_dfr(gene_list, function(gene){
+    glm(
+        data = mut_table_pre,
+        formula = as.formula(paste(gene, "~ anytreatment + AGE + SEX + RACE")),
+        family = binomial(link = "logit")
+    ) %>%
+        sjPlot::get_model_data(type = "est") %>%
+        mutate(Gene = gene)
+})
+model_treatment_gene_pre <- model_treatment_gene_pre %>% filter(term == "anytreatmentTreatment")
+
+pre_treatment_prop <- mut_table_pre %>%
+    group_by(anytreatment) %>%
+    dplyr::select(-AGE, -SEX) %>%
+    summarise_if(is.numeric, sum, na.rm = TRUE) %>%
+    pivot_longer(cols = -c(anytreatment), names_to = "Gene", values_to = "n") %>%
+    group_by(anytreatment, Gene) %>%
+    left_join(
+        mut_table_pre %>%
+            group_by(anytreatment) %>%
+            summarise(total_patients = n())
+    ) %>%
+    mutate(
+        Proportion = n / total_patients,
+        Gene = factor(Gene, levels = c(gene_list)),
+        Treatment = ifelse(anytreatment == "Treatment", "Pre-Treatment", "Untreated"),
+        Treatment = factor(Treatment, levels = c("Untreated", "Pre-Treatment"))
+    ) %>%
+    rowwise() %>%
+    mutate(
+        # Using exact binomial confidence intervals
+        ci_data = list(if(total_patients > 0) {
+            binom_test <- binom.test(n, total_patients, conf.level = 0.95)
+            tibble(
+                lower_ci = binom_test$conf.int[1],
+                upper_ci = binom_test$conf.int[2]
+            )
+        } else {
+            tibble(lower_ci = 0, upper_ci = 0)
+        }),
+        lower_ci = ci_data$lower_ci,
+        upper_ci = ci_data$upper_ci
+    ) %>%
+    select(-ci_data) %>%
+    ungroup()
+```
+
+# Figure 2C - Proportion of Mutations per Gene Post-Treatment
+```{r fig2c_post-treatment, message = FALSE, warning = FALSE, fig.width=15, fig.height=6}
+num_mutations_per_person_post <- parp_carbo_df %>%
+    filter(whereincycle == "post") %>%
+    group_by(DeID, Gene, anytreatment) %>%
+    summarise(n = sum(putative_driver)) %>%
+    filter(Gene != "") %>%
+    pivot_wider(names_from = Gene, values_from = n, values_fill = 0) %>%
+    ungroup()
+
+mut_table_post <- table_demographics %>%
+    left_join(num_mutations_per_person_post, by = c("DEID" = "DeID")) %>%
+    mutate(
+        anytreatment = case_when(
+            fromwhere == "G1 Therapeutics" ~ "Treatment",
+            fromwhere == "MSK" ~ "Treatment",
+            fromwhere == "Carlos" ~ "No Treatment",
+            fromwhere == "Ovarian" ~ "Treatment"
+        )
+    ) %>%
+    group_by(DEID, AGE, SEX, RACE, anytreatment) %>%
+    summarise_if(is.numeric, function(x) sum(x != 0, na.rm = TRUE))
+
+# Logistic Regression for DDR Mutations
+glm(
+    data = mut_table_post %>% mutate(DDR_Mutations = ifelse(PPM1D == 1 | TP53 == 1 | CHEK2 == 1, 1, 0)),
+    formula = DDR_Mutations ~ anytreatment + AGE + SEX + RACE,
+    family = binomial(link = "logit")
+) %>% sjPlot::get_model_data(type = "est")
+
+model_treatment_gene_post <- map_dfr(gene_list, function(gene){
+    glm(
+        data = mut_table_post,
+        formula = as.formula(paste(gene, "~ anytreatment + AGE + SEX + RACE")),
+        family = binomial(link = "logit")
+    ) %>%
+        sjPlot::get_model_data(type = "est") %>%
+        mutate(Gene = gene)
+})
+model_treatment_gene_post <- model_treatment_gene_post %>% filter(term == "anytreatmentTreatment")
+
+post_treatment_prop <- mut_table_post %>%
+    group_by(anytreatment) %>%
+    dplyr::select(-AGE, -SEX) %>%
+    summarise_if(is.numeric, sum, na.rm = TRUE) %>%
+    pivot_longer(cols = -c(anytreatment), names_to = "Gene", values_to = "n") %>%
+    group_by(anytreatment, Gene) %>%
+    left_join(
+        mut_table_post %>%
+            group_by(anytreatment) %>%
+            summarise(total_patients = n())
+    ) %>%
+    mutate(
+        Proportion = n / total_patients,
+        Gene = factor(Gene, levels = c(gene_list)),
+        Treatment = ifelse(anytreatment == "Treatment", "Post-Treatment", "Untreated"),
+        Treatment = factor(Treatment, levels = c("Untreated", "Post-Treatment"))
+    ) %>%
+    rowwise() %>%
+    mutate(
+        # Using exact binomial confidence intervals
+        ci_data = list(if(total_patients > 0) {
+            binom_test <- binom.test(n, total_patients, conf.level = 0.95)
+            tibble(
+                lower_ci = binom_test$conf.int[1],
+                upper_ci = binom_test$conf.int[2]
+            )
+        } else {
+            tibble(lower_ci = 0, upper_ci = 0)
+        }),
+        lower_ci = ci_data$lower_ci,
+        upper_ci = ci_data$upper_ci
+    ) %>%
+    select(-ci_data) %>%
+    ungroup()
+
+fig2c <-rbind(
+        naive_treatment_prop,
+        pre_treatment_prop %>% filter(Treatment == "Pre-Treatment"),
+        post_treatment_prop %>% filter(Treatment == "Post-Treatment")
+    ) %>%
+    mutate(
+        Treatment = case_when(
+            Treatment == "Untreated" ~ "Healthy Controls",
+            Treatment == "No Genotoxic Treatment" ~ "Pre-Treatment with No Prior Genotoxic Therapy",
+            Treatment == "Pre-Treatment" ~ "Pre-Carboplatin/PARP Inhibitor Treatment",
+            Treatment == "Post-Treatment" ~ "Post-Carboplatin/PARP Inhibitor Treatment"
+        ),
+        Treatment = factor(Treatment, levels = c("Healthy Controls", "Pre-Treatment with No Prior Genotoxic Therapy", "Pre-Carboplatin/PARP Inhibitor Treatment", "Post-Carboplatin/PARP Inhibitor Treatment"))
     ) %>%
     ggplot(
         aes(
@@ -415,31 +687,54 @@ fig2b <- mut_table %>%
     theme(
         axis.text.y = ggtext::element_markdown(),
         axis.text.x = ggtext::element_markdown(angle = 45, hjust = 1),
-        legend.position = c(0.8, 0.6),
+        legend.position = c(0.7, 0.8),
         legend.direction = "vertical",
+        legend.text = element_text(size = 18),
         plot.margin = margin(2, 0, 0, 1, "cm")
     ) +
     scale_y_continuous(labels = scales::percent, limits = c(0, 0.7), expand = c(0, 0)) +
     scale_fill_nejm() +
-    do.call(geom_signif, default_sig(0.65, 0.75, 1.25, model_treatment_gene$p.value[1], model_treatment_gene$p.stars[1], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(0.4, 1.75, 2.25, model_treatment_gene$p.value[2], model_treatment_gene$p.stars[2], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(0.1, 2.75, 3.25, model_treatment_gene$p.value[3], model_treatment_gene$p.stars[3], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(0.5, 3.75, 4.25, model_treatment_gene$p.value[4], model_treatment_gene$p.stars[4], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(0.35, 4.75, 5.25, model_treatment_gene$p.value[5], model_treatment_gene$p.stars[5], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(0.25, 5.75, 6.25, model_treatment_gene$p.value[6], model_treatment_gene$p.stars[6], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(0.1, 6.75, 7.25, model_treatment_gene$p.value[7], model_treatment_gene$p.stars[7], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(0.1, 7.75, 8.25, model_treatment_gene$p.value[8], model_treatment_gene$p.stars[8], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(0.1, 8.75, 9.25, model_treatment_gene$p.value[9], model_treatment_gene$p.stars[9], show_values = FALSE))
-fig2b
-ggsave(paste0(figures_save_path, "Figure2B_ProportionMutatedGenes.png"), fig2b, width = 10, height = 8, units = "in", dpi = 300)
+    do.call(geom_signif, default_sig(0.65, 0.65, 1.25, model_treatment_gene_post$p.value[1], model_treatment_gene_post$p.stars[1], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.4, 1.65, 2.25, model_treatment_gene_post$p.value[2], model_treatment_gene_post$p.stars[2], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.1, 2.65, 3.25, model_treatment_gene_post$p.value[3], model_treatment_gene_post$p.stars[3], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.45, 3.65, 4.25, model_treatment_gene_post$p.value[4], model_treatment_gene_post$p.stars[4], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.35, 4.65, 5.25, model_treatment_gene_post$p.value[5], model_treatment_gene_post$p.stars[5], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.25, 5.65, 6.25, model_treatment_gene_post$p.value[6], model_treatment_gene_post$p.stars[6], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.1, 6.65, 7.25, model_treatment_gene_post$p.value[7], model_treatment_gene_post$p.stars[7], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.1, 7.65, 8.25, model_treatment_gene_post$p.value[8], model_treatment_gene_post$p.stars[8], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.1, 8.65, 9.25, model_treatment_gene_post$p.value[9], model_treatment_gene_post$p.stars[9], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    # Pre Stuff
+    do.call(geom_signif, default_sig(0.55, 0.65, 1.05, model_treatment_gene_pre$p.value[1], model_treatment_gene_pre$p.stars[1], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.3, 1.65, 2.05, model_treatment_gene_pre$p.value[2], model_treatment_gene_pre$p.stars[2], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.1, 2.65, 3.05, model_treatment_gene_pre$p.value[3], model_treatment_gene_pre$p.stars[3], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.4, 3.65, 4.05, model_treatment_gene_pre$p.value[4], model_treatment_gene_pre$p.stars[4], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.3, 4.65, 5.05, model_treatment_gene_pre$p.value[5], model_treatment_gene_pre$p.stars[5], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.2, 5.65, 6.05, model_treatment_gene_pre$p.value[6], model_treatment_gene_pre$p.stars[6], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.05, 6.65, 7.05, model_treatment_gene_pre$p.value[7], model_treatment_gene_pre$p.stars[7], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.05, 7.65, 8.05, model_treatment_gene_pre$p.value[8], model_treatment_gene_pre$p.stars[8], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.05, 8.65, 9.05, model_treatment_gene_pre$p.value[9], model_treatment_gene_pre$p.stars[9], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    # Naive Stuff
+    do.call(geom_signif, default_sig(0.65, 0.65, 0.85, model_treatment_gene_naive$p.value[1], model_treatment_gene_naive$p.stars[1], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.4, 1.65, 1.85, model_treatment_gene_naive$p.value[2], model_treatment_gene_naive$p.stars[2], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.2, 2.65, 2.85, model_treatment_gene_naive$p.value[3], model_treatment_gene_naive$p.stars[3], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.3, 3.65, 3.85, model_treatment_gene_naive$p.value[4], model_treatment_gene_naive$p.stars[4], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.35, 4.65, 4.85, model_treatment_gene_naive$p.value[5], model_treatment_gene_naive$p.stars[5], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.25, 5.65, 5.85, model_treatment_gene_naive$p.value[6], model_treatment_gene_naive$p.stars[6], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.1, 6.65, 6.85, model_treatment_gene_naive$p.value[7], model_treatment_gene_naive$p.stars[7], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.1, 7.65, 7.85, model_treatment_gene_naive$p.value[8], model_treatment_gene_naive$p.stars[8], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(0.1, 8.65, 8.85, model_treatment_gene_naive$p.value[9], model_treatment_gene_naive$p.stars[9], show_values = TRUE, hide_ns = TRUE, textsize = 6))
+fig2c
+pdf(paste0(figures_save_path, "Figure2C_ProportionMutatedGenes.pdf"), width = 12, height = 8)
+fig2c
+dev.off()
 ```
 
-# Figure 2C - Average Number of Mutations per Gene
-```{r fig2c, message = FALSE, warning = FALSE, fig.width=18, fig.height=8}
+# Figure 2D - Average Number of Mutations per Gene Post-Treatment
+```{r fig2d, message = FALSE, warning = FALSE, fig.width=18, fig.height=8}
 ddr_mut_table <- table_demographics %>%
     left_join(
         # For each person, count the number of mutations in DDR genes
-        num_mutations_per_person %>%
+        num_mutations_per_person_post %>%
             mutate(DDR_Mutations = rowSums(across(c(PPM1D, TP53, CHEK2)))) %>%
             select(DeID, DDR_Mutations), 
         by = c("DEID" = "DeID")
@@ -450,7 +745,7 @@ ddr_mut_table <- table_demographics %>%
         anytreatment = case_when(
             fromwhere == "G1 Therapeutics" ~ "Treatment",
             fromwhere == "MSK" ~ "Treatment",
-            fromwhere == "Carlos" ~ "No Treatment",
+            fromwhere == "Carlos" ~ "Healthy",
             fromwhere == "Ovarian" ~ "Treatment"
         )
     ) %>%
@@ -459,7 +754,7 @@ ddr_mut_table <- table_demographics %>%
     mutate(
         DDR_Mutations = ifelse(DDR_Mutations >= 5, "5+", as.character(DDR_Mutations)),
         DDR_Mutations = factor(DDR_Mutations, levels = c(as.character(0:4), "5+")),
-        anytreatment = factor(anytreatment, levels = c("No Treatment", "Treatment"))
+        anytreatment = factor(anytreatment, levels = c("Healthy", "Treatment"))
     ) %>%
     group_by(DDR_Mutations, anytreatment, .drop = FALSE) %>%
     summarise(number_of_patients = n()) %>%
@@ -470,7 +765,7 @@ ddr_mut_table <- table_demographics %>%
         proportion = number_of_patients / total_patients,
     )
 
-fig2c <- ddr_mut_table %>%
+fig2d <- ddr_mut_table %>%
     ggplot(
         aes(
             x = DDR_Mutations,
@@ -486,14 +781,180 @@ fig2c <- ddr_mut_table %>%
     ) +
     panel_theme_basic +
     theme(
-        legend.position = c(0.8, 0.6),
+        legend.position = c(0.7, 0.6),
         legend.direction = "vertical",
-        plot.margin = margin(2, 0, 1, 1, "cm")
+        plot.margin = margin(0, 0, 1, 1, "cm")
     ) +
     scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
     scale_fill_nejm()
-fig2c
-ggsave(paste0(figures_save_path, "Figure2C_AverageNumberMutatedGenes.png"), fig2c, width = 10, height = 8, units = "in", dpi = 300)
+fig2d
+pdf(paste0(figures_save_path, "Figure2D_AverageNumberMutatedGenes.pdf"), width = 6, height = 8)
+fig2d
+dev.off()
+```
+
+# Figure 2E - Post-Treatment Waterfall Plot
+```{r fig2e, fig.width=10, fig.height=8}
+df_to_maf <- parp_carbo_df %>% 
+    filter(!(DeID %in% c(parp_then_carbo, carbo_then_parp))) %>%    # Remove individuals who received both PARP Inhibitor and Carboplatin to avoid confounding effects in the visualization
+    filter(VariantClass != "synonymous_variant", putative_driver == 1, whereincycle == "post") %>%
+    filter(key != "") %>%
+    separate(key, into = c("Chromosome", "Start_Position", "alleles"), sep = " ") %>%
+    separate(alleles, into = c("Reference_Allele", "Tumor_Seq_Allele2"), sep = ">") %>%
+    mutate(
+        Tumor_Sample_Barcode = DeID,
+        Hugo_Symbol = Gene,
+        Variant_Classification = VariantClass,
+        Start_Position = as.numeric(Start_Position),
+        Variant_Type = case_when(
+            nchar(Reference_Allele) == nchar(Tumor_Seq_Allele2) ~ "SNP",
+            nchar(Reference_Allele) < nchar(Tumor_Seq_Allele2) ~ "INS",
+            nchar(Reference_Allele) > nchar(Tumor_Seq_Allele2) ~ "DEL"
+        ),
+        End_Position = case_when(
+            Variant_Type == "SNP" ~ Start_Position,
+            Variant_Type == "INS" ~ Start_Position,
+            Variant_Type == "DEL" ~ (Start_Position + nchar(Reference_Allele) - 1)
+        ),
+        stringsAsFactors = FALSE
+    )
+
+nejmPal <- pal_nejm("default")(8)
+col <- nejmPal[1:6]
+names(col) <- c("Multimutation", "Frameshift", "Missense", "Nonsense", "Splicing", "Other")
+
+# Function to define colors for alteration cells
+alter_fun_vec <- function(x, y, w, h, v) {
+    tmp <- pal_nejm("default")(6)
+    names(tmp) <- c("Multimutation", "Frameshift", "Missense", "Nonsense", "Splicing", "Other")
+    colNames <- names(v)[!is.na(names(v))]
+    v <- matrix(v, ncol = length(colNames))
+    color <- apply(v, 1, function(x) {
+        if (sum(x) == 0) {
+            "#FFFFFF"
+        } else {
+            tmp[colNames[x]][1]
+        }
+    })
+    grid.rect(x, y, w * 1.1, h,
+        gp = gpar(fill = color, col = NA)
+    )
+}
+
+# Preparing Data for OncoPrint
+toPlot <- df_to_maf %>%
+    dplyr::select(DeID, Gene, VariantClass, Cohort) %>%
+    dplyr::filter(Gene != "") %>%
+    group_by(DeID, Gene) %>%
+    mutate(VariantClass = ifelse(n() > 1, "multi_mutation", VariantClass)) %>%
+    ungroup() %>%
+    distinct() %>%
+    mutate(
+        VariantClass = case_match(
+            VariantClass,
+            "multi_mutation" ~ "Multimutation",
+            "frameshift_variant" ~ "Frameshift",
+            c("missense_variant", "inframe_deletion", "inframe_insertion") ~ "Missense",
+            "splice_region_variant" ~ "Splicing",
+            c("start_lost", "stop_gained") ~ "Nonsense",
+            .default = "Other"
+        )
+    )
+
+# Creating Matrix for OncoPrint
+mat <- toPlot %>%
+    dplyr::select(DeID, Gene, VariantClass) %>%
+    pivot_wider(names_from = DeID, values_from = VariantClass, values_fill = "") %>%
+    column_to_rownames("Gene")
+# Ordering rows by number of mutations per gene
+rowOrder <- toPlot %>%
+    group_by(Gene) %>%
+    summarise(n = n()) %>%
+    arrange(desc(n)) %>%
+    pull(Gene) %>%
+    unique()
+# Ordering columns by Cohort, Gene, VariantClass, and number of mutations
+colOrder <- toPlot %>%
+    group_by(DeID) %>%
+    mutate(n = sum(VariantClass != "")) %>%
+    ungroup() %>%
+    arrange(
+        factor(Cohort, levels = c("Healthy", "Carboplatin", "PARPi")),
+        factor(Gene, levels = rowOrder),
+        factor(VariantClass, levels = c("Multimutation", "Frameshift", "Missense", "Nonsense", "Splicing", "Other")),
+        desc(n)
+    ) %>%
+    pull(DeID) %>%
+    unique()
+# Reordering matrix
+mat <- mat[rowOrder, colOrder]
+# Creating Column Information for Annotations
+colInfor <- toPlot %>%
+    dplyr::select(DeID, Cohort) %>%
+    distinct() %>%
+    arrange(factor(DeID, levels = colOrder))
+
+p <- oncoPrint(mat,
+    alter_fun = alter_fun_vec,
+    alter_fun_is_vectorized = TRUE,
+    col = col,
+    row_order = rownames(mat),
+    column_order = colnames(mat),
+    show_pct = TRUE,
+    pct_side = "right",
+    row_names_side = "left",
+    top_annotation = HeatmapAnnotation(
+        annotation_name_gp = gpar(fontsize = 10),
+        annotation_name_side = "left",
+        annotation_name_rot = 90,
+        annotation_name_offset = unit(15, "points"),
+        "# of Muts" = anno_oncoprint_barplot() %>%
+            {
+                x <- .
+                x@show_name <- TRUE
+                x
+            }
+    ),
+    right_annotation = rowAnnotation(
+        annotation_name_gp = gpar(fontsize = 10),
+        annotation_name_side = "top",
+        annotation_name_offset = unit(15, "points"),
+        "# of Samples" = anno_oncoprint_barplot() %>%
+            {
+                x <- .
+                x@show_name <- TRUE
+                x
+            }
+    ),
+    bottom_annotation = HeatmapAnnotation(
+        Cohort = colInfor$Cohort,
+        col = list(
+            Cohort = c(`Healthy` = nejmPal[1], `Carboplatin` = nejmPal[2], `PARPi` = nejmPal[3])
+        ),
+        annotation_legend_param = list(
+            Cohort = list(
+                nrow = 1,
+                at = c("Healthy", "Carboplatin", "PARPi")
+            )
+        )
+    ),
+    heatmap_legend_param = list(
+        title = "Alteration",
+        nrow = 2,
+        by_row = TRUE,
+        at = c("Multimutation", "Frameshift", "Missense", "Nonsense", "Splicing", "Other")
+    )
+)
+
+pdf(paste0(figures_save_path, "Figure2E_WaterfallPlot.pdf"), width = 8, height = 5)
+draw(
+    p,
+    heatmap_legend_side = "bottom",
+    annotation_legend_side = "bottom",
+    merge_legend = TRUE,
+    padding = unit(c(5.5, 5.5, 5.5, 10), "points")
+)
+dev.off()
 ```
 
 # Figure 3A - Growth Rate by Gene Class
@@ -528,19 +989,21 @@ fig3a <- df_to_plot %>%
     panel_theme_basic +
     scale_fill_manual(values = treatment_colors) +
     theme(
-        legend.position = "right",
-        legend.direction = "vertical",
+        #legend.position = "right",
+        #legend.direction = "vertical",
         plot.margin = margin(2, 0, 0, 1, "cm")
     ) +
     scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05), limit = c(NA, 1.5)) +
-    do.call(geom_signif, default_sig(5, 1.75, 2, model_growth_rate_class$p.value[1], model_growth_rate_class$p.stars[1], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(6, 1.75, 2.25, model_growth_rate_class$p.value[2], model_growth_rate_class$p.stars[2], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(7.1, 2, 2.25, model_growth_rate_class$p.value[5], model_growth_rate_class$p.stars[5], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(5, 0.75, 1, model_growth_rate_class$p.value[3], model_growth_rate_class$p.stars[3], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(6, 0.75, 1.25, model_growth_rate_class$p.value[4], model_growth_rate_class$p.stars[4], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(7.1, 1, 1.25, model_growth_rate_class$p.value[6], model_growth_rate_class$p.stars[6], show_values = FALSE))
+    do.call(geom_signif, default_sig(5, 1.75, 2, model_growth_rate_class$p.value[1], model_growth_rate_class$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(6, 1.75, 2.25, model_growth_rate_class$p.value[2], model_growth_rate_class$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(7.1, 2, 2.25, model_growth_rate_class$p.value[5], model_growth_rate_class$p.stars[5], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(5, 0.75, 1, model_growth_rate_class$p.value[3], model_growth_rate_class$p.stars[3], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(6, 0.75, 1.25, model_growth_rate_class$p.value[4], model_growth_rate_class$p.stars[4], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(7.1, 1, 1.25, model_growth_rate_class$p.value[6], model_growth_rate_class$p.stars[6], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6))
 fig3a
-ggsave(paste0(figures_save_path, "Figure3A_GrowthRate_GeneClass.png"), fig3a, width = 10, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure3A_GrowthRate_GeneClass.pdf"), width = 10, height = 8)
+fig3a
+dev.off()
 ```
 
 # Figure 3B - Growth Rate by Gene
@@ -562,7 +1025,7 @@ model_growth_rate_gene <- purrr::cross_df(list(
                 data = df_subset
             ) 
         } else if (comparison == "no_untreated") {
-            df_subset <- df_to_plot %>% filter(Gene == gene & Cohort != "No Treatment")
+            df_subset <- df_to_plot %>% filter(Gene == gene & Cohort != "Healthy")
             model <- glm(
                 formula = growth_rate ~ Cohort + AGE + SEX + RACE,
                 data = df_subset
@@ -581,6 +1044,8 @@ model_growth_rate_gene <- purrr::cross_df(list(
                 comparison = comparison
             )
     })
+
+
 
 counts <- df_to_plot %>%
     group_by(Cohort, Gene) %>%
@@ -606,22 +1071,24 @@ fig3b <- df_to_plot %>%
     panel_theme_basic +
     scale_fill_manual(values = treatment_colors) +
     theme(
-        legend.position = "right",
-        legend.direction = "vertical",
+        #legend.position = "right",
+        #legend.direction = "vertical",
         plot.margin = margin(2, 0, 0, 1, "cm")
     ) +
     scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05), limit = c(NA, 1.5)) +
-    do.call(geom_signif, default_sig(5, 0.75, 1, model_growth_rate_gene$p.value[1], model_growth_rate_gene$p.stars[1], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(6, 0.75, 1.25, model_growth_rate_gene$p.value[2], model_growth_rate_gene$p.stars[2], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(7.1, 1, 1.25, model_growth_rate_gene$p.value[7], model_growth_rate_gene$p.stars[7], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(5, 1.75, 2, model_growth_rate_gene$p.value[3], model_growth_rate_gene$p.stars[3], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(6, 1.75, 2.25, model_growth_rate_gene$p.value[4], model_growth_rate_gene$p.stars[4], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(7.1, 2, 2.25, model_growth_rate_gene$p.value[8], model_growth_rate_gene$p.stars[8], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(5, 2.75, 3, model_growth_rate_gene$p.value[5], model_growth_rate_gene$p.stars[5], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(6, 2.75, 3.25, model_growth_rate_gene$p.value[6], model_growth_rate_gene$p.stars[6], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(7.1, 3, 3.25, model_growth_rate_gene$p.value[9], model_growth_rate_gene$p.stars[9], show_values = FALSE))
+    do.call(geom_signif, default_sig(5, 0.75, 1, model_growth_rate_gene$p.value[1], model_growth_rate_gene$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(6, 0.75, 1.25, model_growth_rate_gene$p.value[2], model_growth_rate_gene$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(7.1, 1, 1.25, model_growth_rate_gene$p.value[7], model_growth_rate_gene$p.stars[7], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(5, 1.75, 2, model_growth_rate_gene$p.value[3], model_growth_rate_gene$p.stars[3], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(6, 1.75, 2.25, model_growth_rate_gene$p.value[4], model_growth_rate_gene$p.stars[4], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(7.1, 2, 2.25, model_growth_rate_gene$p.value[8], model_growth_rate_gene$p.stars[8], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(5, 2.75, 3, model_growth_rate_gene$p.value[5], model_growth_rate_gene$p.stars[5], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(6, 2.75, 3.25, model_growth_rate_gene$p.value[6], model_growth_rate_gene$p.stars[6], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(7.1, 3, 3.25, model_growth_rate_gene$p.value[9], model_growth_rate_gene$p.stars[9], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6))
 fig3b
-ggsave(paste0(figures_save_path, "Figure3B_GrowthRate_Gene.png"), fig3b, width = 12, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure3B_GrowthRate_Gene.pdf"), width = 10, height = 8)
+fig3b
+dev.off()
 ```
 
 # Figure 3C - Growth Rate by Specific PARP Inhibitor
@@ -704,17 +1171,19 @@ fig3c <- df_to_plot %>%
     theme(
         legend.position = "right",
         legend.direction = "vertical",
-        plot.margin = margin(2, 0, 0, 1, "cm")
+        plot.margin = margin(2, 0, 0, 0, "cm")
     ) +
     scale_fill_manual(values = c("#BC3C29FF", "#20854EFF", "#7876B1FF", "#6F99ADFF", "#FFDC91FF")) +
     scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.1, -0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05, 0.1), limit = c(NA, 2)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 5, 0.72, 0.90, model_growth_rate_parp_glm$p.value[1], model_growth_rate_parp_glm$p.stars[1], show_values = FALSE)) +  # NoTreatment Vs Olaparib
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 6, 0.72, 1.1, model_growth_rate_parp_glm$p.value[2], model_growth_rate_parp_glm$p.stars[2], show_values = FALSE)) +   # NoTreatment Vs Niraparib
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 7, 0.72, 1.28, model_growth_rate_parp_glm$p.value[4], model_growth_rate_parp_glm$p.stars[4], show_values = FALSE)) +  # NoTreatment Vs Talazoparib
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 5, 0.91, 1.28, model_growth_rate_parp_glm$p.value[7], model_growth_rate_parp_glm$p.stars[7], show_values = FALSE)) +  # Olaparib Vs Talazoparib
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 6, 1.11, 1.28, model_growth_rate_parp_glm$p.value[9], model_growth_rate_parp_glm$p.stars[9], show_values = FALSE)) #+ # Niraparib Vs Talazoparib
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 5, 0.72, 0.90, model_growth_rate_parp_glm$p.value[1], model_growth_rate_parp_glm$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +  # NoTreatment Vs Olaparib
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 6, 0.72, 1.1, model_growth_rate_parp_glm$p.value[2], model_growth_rate_parp_glm$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +   # NoTreatment Vs Niraparib
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 7, 0.72, 1.28, model_growth_rate_parp_glm$p.value[4], model_growth_rate_parp_glm$p.stars[4], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +  # NoTreatment Vs Talazoparib
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 5, 0.91, 1.28, model_growth_rate_parp_glm$p.value[7], model_growth_rate_parp_glm$p.stars[7], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +  # Olaparib Vs Talazoparib
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 6, 1.11, 1.28, model_growth_rate_parp_glm$p.value[9], model_growth_rate_parp_glm$p.stars[9], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) #+ # Niraparib Vs Talazoparib
 fig3c
-ggsave(paste0(figures_save_path, "Figure3C_GrowthRate_ParpInhibitor.png"), fig3c, width = 8, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure3C_GrowthRate_ParpInhibitor.pdf"), width = 8, height = 8)
+fig3c
+dev.off()
 ```
 
 # Figure 3D - Growth Rate by Prior Treatment
@@ -722,7 +1191,7 @@ ggsave(paste0(figures_save_path, "Figure3C_GrowthRate_ParpInhibitor.png"), fig3c
 df_to_plot <- timepoints %>%
     filter(growth_rate != Inf & growth_rate != -Inf) %>%
     filter(Gene_Class == "DDR") %>%
-    filter(Cohort != "No Treatment")
+    filter(Cohort != "Healthy")
 
 model_growth_rate_prior_treatment <- rbind(
     glm(
@@ -767,14 +1236,16 @@ fig3d <- df_to_plot %>%
     theme(
         legend.position = "top",
         legend.direction = "vertical",
-        plot.margin = margin(2, 0, 0, 1, "cm"),
+        plot.margin = margin(2, 0, 0, 0, "cm"),
         axis.text.x = element_blank()
     ) +
     scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05, 0.1), limits = c(NA, 0.15)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Cohort == "Carboplatin", Gene_Class == "DDR" ), 4.5, 0.8, 1.2, model_growth_rate_prior_treatment$p.value[1], model_growth_rate_prior_treatment$p.stars[1], show_values = FALSE, hide_ns = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Cohort == "PARPi", Gene_Class == "DDR" ), 4.5, 0.8, 1.2, model_growth_rate_prior_treatment$p.value[2], model_growth_rate_prior_treatment$p.stars[2], show_values = FALSE, hide_ns = FALSE))
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Cohort == "Carboplatin", Gene_Class == "DDR" ), 4.5, 0.8, 1.2, model_growth_rate_prior_treatment$p.value[1], model_growth_rate_prior_treatment$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Cohort == "PARPi", Gene_Class == "DDR" ), 4.5, 0.8, 1.2, model_growth_rate_prior_treatment$p.value[2], model_growth_rate_prior_treatment$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5))
 fig3d
-ggsave(paste0(figures_save_path, "Figure3D_GrowthRate_PriorTreatment.png"), fig3d, width = 8, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure3D_GrowthRate_PriorTreatment.pdf"), width = 8, height = 8)
+fig3d
+dev.off()
 ```
 
 # Figure 4C - Treatment Expands TP53 Mutant Cells
@@ -785,9 +1256,8 @@ fig4c <- make_mouse_cell_plot(
     cell_col = "CD45.2_Cells",
     title = "", y_lab = expression(atop("%Trp53"^"R172H/+"~"Cells", "(Normalized to 0-week)"))
 )
-fig4c <- add_significance_annotation(fig4c, "***", 13.5, 1.89, 1.12)
-fig4c <- add_significance_annotation(fig4c, "*", 14, 1.3, 1.12)
 
+# Check the statistics
 fig4c_df <- mouse_data[["Figure 4C"]] %>%
     mutate(Mouse_Cohort = paste0(Mouse, " - ", Cohort))
 
@@ -813,8 +1283,14 @@ anova_model <- map_dfr(combn(unique(fig4c_df$Cohort), 2, simplify = FALSE), func
     )
 })
 anova_model
+
+fig4c <- add_significance_annotation(fig4c, format(anova_model$p.value[2], digits = 2), 13.5, 1.89, 1.12, size_text = 4)
+fig4c <- add_significance_annotation(fig4c, format(anova_model$p.value[1], digits = 2), 14, 1.3, 1.12, size_text = 4)
+
 fig4c
-ggsave(paste0(figures_save_path, "Figure4C_PercentageTrp53Cells.png"), fig4c, width = 10, height = 6, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure4C_PercentageTrp53Cells.pdf"), width = 10, height = 6)
+fig4c
+dev.off()
 ```
 
 # Figure 4D - Treatment Expands TP53 Mutant Cells
@@ -857,16 +1333,18 @@ fig4d <- fig4d_to_plot %>%
         plot.margin = margin(2, 0, 0, 1, "cm")
     ) +
     scale_y_continuous(limit = c(0, 110), breaks = c(0, 25, 50, 75, 100)) +
-    geom_signif(data = fig4d_to_plot, y_position = 100, xmin = 0.7, xmax = 0.9, annotations = "****", tip_length = 0.05, textsize = 8) +
-    geom_signif(data = fig4d_to_plot, y_position = 100, xmin = 1.7, xmax = 1.9, annotations = "****", tip_length = 0.05, textsize = 8) +
-    geom_signif(data = fig4d_to_plot, y_position = 95, xmin = 2.7, xmax = 2.9, annotations = "**", tip_length = 0.05, textsize = 8) +
-    geom_signif(data = fig4d_to_plot, y_position = 105, xmin = 2.7, xmax = 3.1, annotations = "*", tip_length = 0.05, textsize = 8)
+    geom_signif(data = fig4d_to_plot, y_position = 100, xmin = 0.7, xmax = 0.9, annotations = "P<0.0001", tip_length = 0.05, textsize = 6) +
+    geom_signif(data = fig4d_to_plot, y_position = 100, xmin = 1.7, xmax = 1.9, annotations = "P<0.0001", tip_length = 0.05, textsize = 6) +
+    geom_signif(data = fig4d_to_plot, y_position = 95, xmin = 2.7, xmax = 2.9, annotations = "P=0.009", tip_length = 0.05, textsize = 6) +
+    geom_signif(data = fig4d_to_plot, y_position = 105, xmin = 2.7, xmax = 3.1, annotations = "P=0.0427", tip_length = 0.05, textsize = 6)
 fig4d
-ggsave(paste0(figures_save_path, "Figure4D_BoneMarrowChimerism.png"), fig4d, width = 10, height = 6, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure4D_BoneMarrowChimerism.pdf"), width = 10, height = 6)
+fig4d
+dev.off()
 ```
 
-# Figure 5A - Growth Rate by Gene Class w/ Germline
-```{r fig5a, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+# Figure 5A and 5B - Statistics - Growth Rate by Gene Class w/ Germline
+```{r fig5ab_statistics, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
 df_to_plot <- timepoints %>%
     filter(growth_rate != Inf & growth_rate != -Inf) %>%
     filter(Gene_Class == "DDR" | Gene_Class == "DTA") %>%
@@ -878,12 +1356,12 @@ model_growth_rate_germline_HRD_class_glm <- purrr::cross_df(list(
 )) %>%
     pmap_dfr(function(class, germline) {
         print(paste("Processing", class, germline))
-        main <- if (germline == "HRD Germline") {
+        main <- if (germline == "HRD Germline" & class == "DDR") {
             glm(
                 formula = growth_rate ~ Cohort + AGE + SEX + RACE,
                 data = df_to_plot %>%
                     filter(Gene_Class == class, HRD == germline) %>%
-                    filter(Cohort != "No Treatment") %>%
+                    filter(Cohort != "Healthy") %>%
                     mutate(Cohort = factor(Cohort, levels = c("Carboplatin", "PARPi")))
             ) %>%
                 sjPlot::get_model_data(type = "est") %>%
@@ -914,7 +1392,7 @@ model_growth_rate_germline_HRD_class_glm <- purrr::cross_df(list(
                     formula = growth_rate ~ Cohort + AGE + SEX + RACE,
                     data = df_to_plot %>%
                         filter(Gene_Class == class, HRD == germline) %>%
-                        filter(Cohort != "No Treatment") %>%
+                        filter(Cohort != "Healthy") %>%
                         mutate(Cohort = factor(Cohort, levels = c("Carboplatin", "PARPi")))
                 ) %>%
                     sjPlot::get_model_data(type = "est") %>%
@@ -928,29 +1406,40 @@ model_growth_rate_germline_HRD_class_glm <- purrr::cross_df(list(
         }
     })
 # Add the HRD effect for each class and cohort
-hrd_effect <- map_dfr(c("Carboplatin", "PARPi"), function(cohort) {
-    glm(
-        formula = growth_rate ~ HRD + AGE + SEX + RACE,
-        data = df_to_plot %>%
-            filter(Gene_Class == "DDR") %>%
-            filter(Cohort == cohort) %>%
-            mutate(HRD = factor(HRD, levels = c("No Germline", "HRD Germline")))
-    ) %>%
-        sjPlot::get_model_data(type = "est") %>%
-        filter(term == "HRDHRD Germline") %>%
-        mutate(
-            term = "HRDNoGermline",
-            Class = "DDR",
-            HRD = cohort
-        )
-})
-model_growth_rate_germline_HRD_class_glm <- bind_rows(model_growth_rate_germline_HRD_class_glm, hrd_effect)
+hrd_effect <- purrr::cross_df(list(
+    class = c("DDR", "DTA"),
+    cohort = c("Carboplatin", "PARPi")
+)) %>%
+    pmap_dfr(function(class, cohort) {
+        print(paste("Processing", class, cohort))
+        glm(
+            formula = growth_rate ~ HRD + AGE + SEX + RACE,
+            data = df_to_plot %>%
+                filter(Gene_Class == class) %>%
+                filter(Cohort == cohort) %>%
+                mutate(HRD = factor(HRD, levels = c("No Germline", "HRD Germline")))
+        ) %>%
+            sjPlot::get_model_data(type = "est") %>%
+            filter(term == "HRDHRD Germline") %>%
+            mutate(
+                term = "HRDNoGermline",
+                Class = class,
+                HRD = cohort
+            )
+    })
+model_growth_rate_germline_HRD_class_glm <- bind_rows(model_growth_rate_germline_HRD_class_glm, hrd_effect %>% filter(Class == "DDR"))
+model_growth_rate_germline_HRD_dta_glm <- model_growth_rate_germline_HRD_class_glm %>% filter(Class == "DTA")
+model_growth_rate_germline_HRD_dta_glm <- bind_rows(model_growth_rate_germline_HRD_dta_glm, hrd_effect %>% filter(Class == "DTA"))
+
 model_growth_rate_germline_HRD_class_glm <- model_growth_rate_germline_HRD_class_glm %>% filter(Class == "DDR")
 
 counts <- df_to_plot %>%
     group_by(Cohort, Gene_Class, HRD) %>%
     summarise(n = n(), .groups = "drop")
+```
 
+# Figure 5A - Growth Rate by Gene Class w/ Germline
+```{r fig5a, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
 fig5a <- df_to_plot %>%
     filter(Gene_Class == "DDR") %>%
     ggplot(
@@ -965,26 +1454,74 @@ fig5a <- df_to_plot %>%
     geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
     geom_text(data = counts %>% filter(Gene_Class == "DDR"), aes(label = n, y = 0.06), size = 8, position = position_dodge(width = 0.8)) +
     labs(
-        x = "",
+        x = "DDR",
         y = "Growth Rate",
         fill = "Cohort"
     ) +
     panel_theme_basic +
     scale_fill_manual(values = treatment_colors) +
-    theme(plot.margin = margin(2, 0, 0, 1, "cm")) +
+    theme(
+        legend.text = element_text(size = 20),
+        plot.margin = margin(0, 0, 0, 1, "cm")
+    ) +
     scale_y_continuous(trans = scales::pseudo_log_trans(0.001), limit = c(NA, 1.5), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05)) +
-    do.call(geom_signif, default_sig_data(df_to_plot, 5, 0.75, 1, model_growth_rate_germline_HRD_class_glm$p.value[1], model_growth_rate_germline_HRD_class_glm$p.stars[1], show_values = FALSE, hide_ns = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot, 6, 0.75, 1.25, model_growth_rate_germline_HRD_class_glm$p.value[2], model_growth_rate_germline_HRD_class_glm$p.stars[2], show_values = FALSE, hide_ns = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot, 7, 1, 1.25, model_growth_rate_germline_HRD_class_glm$p.value[3], model_growth_rate_germline_HRD_class_glm$p.stars[3], show_values = FALSE, hide_ns = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot, 4.5, 1, 1.80, model_growth_rate_germline_HRD_class_glm$p.value[5], model_growth_rate_germline_HRD_class_glm$p.stars[5], show_values = FALSE, hide_ns = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot, 5.5, 1.25, 2.20, model_growth_rate_germline_HRD_class_glm$p.value[6], model_growth_rate_germline_HRD_class_glm$p.stars[6], show_values = FALSE, hide_ns = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot, 6.5, 1.80, 2.20, model_growth_rate_germline_HRD_class_glm$p.value[4], model_growth_rate_germline_HRD_class_glm$p.stars[4], show_values = FALSE, hide_ns = FALSE))
+    do.call(geom_signif, default_sig_data(df_to_plot, 5, 0.75, 1, model_growth_rate_germline_HRD_class_glm$p.value[1], model_growth_rate_germline_HRD_class_glm$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 6, 0.75, 1.25, model_growth_rate_germline_HRD_class_glm$p.value[2], model_growth_rate_germline_HRD_class_glm$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 7, 1, 1.25, model_growth_rate_germline_HRD_class_glm$p.value[3], model_growth_rate_germline_HRD_class_glm$p.stars[3], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 4.5, 1, 1.80, model_growth_rate_germline_HRD_class_glm$p.value[5], model_growth_rate_germline_HRD_class_glm$p.stars[5], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 5.5, 1.25, 2.20, model_growth_rate_germline_HRD_class_glm$p.value[6], model_growth_rate_germline_HRD_class_glm$p.stars[6], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 6.5, 1.80, 2.20, model_growth_rate_germline_HRD_class_glm$p.value[4], model_growth_rate_germline_HRD_class_glm$p.stars[4], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6))
 fig5a
-ggsave(paste0(figures_save_path, "Figure5A_GrowthRate_Germline.png"), fig5a, width = 8, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure5A_GrowthRate_Germline_DDR.pdf"), width = 8, height = 8)
+fig5a
+dev.off()
 ```
 
-# Figure 5B - Growth Rate by Gene w/ Germline
-```{r fig5b, message = FALSE, warning = FALSE, fig.width=15, fig.height=8}
+# Figure 5B - DTA Growth Rate by Gene Class w/ Germline
+```{r fig5b, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+fig5b <- df_to_plot %>%
+    filter(Gene_Class == "DTA") %>%
+    ggplot(
+        aes(
+            x = HRD,
+            y = growth_rate,
+            fill = Cohort
+        )
+    ) +
+    geom_hline(yintercept = 0, color = "black", alpha = 0.3) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    geom_text(data = counts %>% filter(Gene_Class == "DTA"), aes(label = n, y = 0.06), size = 8, position = position_dodge(width = 0.8)) +
+    labs(
+        x = "DTA",
+        y = "Growth Rate",
+        fill = "Cohort"
+    ) +
+    panel_theme_basic +
+    scale_fill_manual(values = treatment_colors) +
+    theme(
+        legend.text = element_text(size = 20),
+        plot.margin = margin(0, 0, 0, 1, "cm")
+    ) +
+    scale_y_continuous(trans = scales::pseudo_log_trans(0.001), limit = c(NA, 1.5), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05))
+    # do.call(geom_signif, default_sig_data(df_to_plot, 5, 0.75, 1, model_growth_rate_germline_HRD_dta_glm$p.value[1], model_growth_rate_germline_HRD_dta_glm$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5)) +
+    # do.call(geom_signif, default_sig_data(df_to_plot, 6, 0.75, 1.25, model_growth_rate_germline_HRD_dta_glm$p.value[2], model_growth_rate_germline_HRD_dta_glm$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5)) +
+    # do.call(geom_signif, default_sig_data(df_to_plot, 7, 1, 1.25, model_growth_rate_germline_HRD_dta_glm$p.value[3], model_growth_rate_germline_HRD_dta_glm$p.stars[3], show_values = TRUE, hide_ns = TRUE, size = 0.5)) +
+
+    # do.call(geom_signif, default_sig_data(df_to_plot, 5, 1.75, 2, model_growth_rate_germline_HRD_dta_glm$p.value[4], model_growth_rate_germline_HRD_dta_glm$p.stars[4], show_values = TRUE, hide_ns = TRUE, size = 0.5)) +
+    # do.call(geom_signif, default_sig_data(df_to_plot, 6, 1.75, 2.25, model_growth_rate_germline_HRD_dta_glm$p.value[5], model_growth_rate_germline_HRD_dta_glm$p.stars[5], show_values = TRUE, hide_ns = TRUE, size = 0.5)) +
+    # do.call(geom_signif, default_sig_data(df_to_plot, 7, 2, 2.25, model_growth_rate_germline_HRD_dta_glm$p.value[6], model_growth_rate_germline_HRD_dta_glm$p.stars[6], show_values = TRUE, hide_ns = TRUE, size = 0.5)) +
+
+    # do.call(geom_signif, default_sig_data(df_to_plot, 2.5, 1, 2, model_growth_rate_germline_HRD_dta_glm$p.value[7], model_growth_rate_germline_HRD_dta_glm$p.stars[7], show_values = TRUE, hide_ns = TRUE, size = 0.5)) +
+    # do.call(geom_signif, default_sig_data(df_to_plot, 3, 1.25, 2.25, model_growth_rate_germline_HRD_dta_glm$p.value[8], model_growth_rate_germline_HRD_dta_glm$p.stars[8], show_values = TRUE, hide_ns = TRUE, size = 0.5))
+fig5b
+pdf(paste0(figures_save_path, "Figure5B_GrowthRate_Germline_DTA.pdf"), width = 8, height = 8)
+fig5b
+dev.off()
+```
+
+# Figure 5C - Growth Rate by Gene w/ Germline
+```{r fig5c, message = FALSE, warning = FALSE, fig.width=15, fig.height=8}
 df_to_plot <- timepoints %>% 
     filter(Gene_Class == "DDR") %>%
     filter(growth_rate != "Inf" & growth_rate != "-Inf") %>%
@@ -1001,7 +1538,7 @@ model_growth_rate_germline_gene_glm <- purrr::cross_df(list(
                 formula = growth_rate ~ Cohort + AGE + SEX + RACE,
                 data = df_to_plot %>%
                     filter(Gene == gene, HRD == germline) %>%
-                    filter(Cohort != "No Treatment") %>%
+                    filter(Cohort != "Healthy") %>%
                     mutate(Cohort = factor(Cohort, levels = c("Carboplatin", "PARPi")))
             ) %>%
                 sjPlot::get_model_data(type = "est") %>%
@@ -1032,7 +1569,7 @@ model_growth_rate_germline_gene_glm <- purrr::cross_df(list(
                     formula = growth_rate ~ Cohort + AGE + SEX + RACE,
                     data = df_to_plot %>%
                         filter(Gene == gene, HRD == germline) %>%
-                        filter(Cohort != "No Treatment") %>%
+                        filter(Cohort != "Healthy") %>%
                         mutate(Cohort = factor(Cohort, levels = c("Carboplatin", "PARPi")))
                 ) %>%
                     sjPlot::get_model_data(type = "est") %>%
@@ -1066,7 +1603,7 @@ counts <- df_to_plot %>%
     group_by(Cohort, Gene, HRD) %>%
     summarise(n = n(), .groups = "drop")
 
-fig5b <- df_to_plot %>%
+fig5c <- df_to_plot %>%
     filter(Gene %in% c("PPM1D", "TP53", "CHEK2")) %>%
     ggplot(
         aes(
@@ -1089,100 +1626,78 @@ fig5b <- df_to_plot %>%
     facet_wrap(~Gene) +
     theme(
         axis.text.x = element_text(size = 22),
-        plot.margin = margin(2, 0, 0, 1, "cm")
+        legend.text = element_text(size = 20),
+        plot.margin = margin(0, 0, 0, 1, "cm")
     ) +
     scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05), limit = c(NA, 1.5)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 5, 0.75, 1, model_growth_rate_germline_gene_glm$p.value[1], model_growth_rate_germline_gene_glm$p.stars[1], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 6, 0.75, 1.25, model_growth_rate_germline_gene_glm$p.value[2], model_growth_rate_germline_gene_glm$p.stars[2], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 7, 1, 1.25, model_growth_rate_germline_gene_glm$p.value[3], model_growth_rate_germline_gene_glm$p.stars[3], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 6, 1.8, 2.2, model_growth_rate_germline_gene_glm$p.value[16], model_growth_rate_germline_gene_glm$p.stars[16], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 6, 1, 1.8, model_growth_rate_germline_gene_glm$p.value[4], model_growth_rate_germline_gene_glm$p.stars[4], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 5, 1.25, 2.2, model_growth_rate_germline_gene_glm$p.value[5], model_growth_rate_germline_gene_glm$p.stars[5], show_values = FALSE)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 5, 0.75, 1, model_growth_rate_germline_gene_glm$p.value[1], model_growth_rate_germline_gene_glm$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 6, 0.75, 1.25, model_growth_rate_germline_gene_glm$p.value[2], model_growth_rate_germline_gene_glm$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 7, 1, 1.25, model_growth_rate_germline_gene_glm$p.value[3], model_growth_rate_germline_gene_glm$p.stars[3], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 6, 1.8, 2.2, model_growth_rate_germline_gene_glm$p.value[16], model_growth_rate_germline_gene_glm$p.stars[16], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 6, 1, 1.8, model_growth_rate_germline_gene_glm$p.value[4], model_growth_rate_germline_gene_glm$p.stars[4], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "TP53"), 5, 1.25, 2.2, model_growth_rate_germline_gene_glm$p.value[5], model_growth_rate_germline_gene_glm$p.stars[5], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
 
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 5, 0.75, 0.99, model_growth_rate_germline_gene_glm$p.value[6], model_growth_rate_germline_gene_glm$p.stars[6], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 6, 0.75, 1.24, model_growth_rate_germline_gene_glm$p.value[7], model_growth_rate_germline_gene_glm$p.stars[7], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 7, 1, 1.25, model_growth_rate_germline_gene_glm$p.value[8], model_growth_rate_germline_gene_glm$p.stars[8], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 5.2, 1.8, 2.2, model_growth_rate_germline_gene_glm$p.value[17], model_growth_rate_germline_gene_glm$p.stars[17], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 5, 1, 1.8, model_growth_rate_germline_gene_glm$p.value[9], model_growth_rate_germline_gene_glm$p.stars[9], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 6, 1.26, 2.2, model_growth_rate_germline_gene_glm$p.value[10], model_growth_rate_germline_gene_glm$p.stars[10], show_values = FALSE)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 5, 0.75, 0.99, model_growth_rate_germline_gene_glm$p.value[6], model_growth_rate_germline_gene_glm$p.stars[6], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 6, 0.75, 1.24, model_growth_rate_germline_gene_glm$p.value[7], model_growth_rate_germline_gene_glm$p.stars[7], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 7, 1, 1.25, model_growth_rate_germline_gene_glm$p.value[8], model_growth_rate_germline_gene_glm$p.stars[8], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 5.2, 1.8, 2.2, model_growth_rate_germline_gene_glm$p.value[17], model_growth_rate_germline_gene_glm$p.stars[17], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 5, 1, 1.8, model_growth_rate_germline_gene_glm$p.value[9], model_growth_rate_germline_gene_glm$p.stars[9], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "PPM1D"), 6, 1.26, 2.2, model_growth_rate_germline_gene_glm$p.value[10], model_growth_rate_germline_gene_glm$p.stars[10], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
 
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 5, 0.75, 1, model_growth_rate_germline_gene_glm$p.value[11], model_growth_rate_germline_gene_glm$p.stars[11], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 6, 0.75, 1.25, model_growth_rate_germline_gene_glm$p.value[12], model_growth_rate_germline_gene_glm$p.stars[12], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 7, 1, 1.25, model_growth_rate_germline_gene_glm$p.value[13], model_growth_rate_germline_gene_glm$p.stars[13], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 4, 1.8, 2.2, model_growth_rate_germline_gene_glm$p.value[18], model_growth_rate_germline_gene_glm$p.stars[18], show_values = FALSE)) +      # Carboplatin to PARPi
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 5.5, 1, 1.8, model_growth_rate_germline_gene_glm$p.value[14], model_growth_rate_germline_gene_glm$p.stars[14], show_values = FALSE)) +      # Carboplatin
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 6, 1.25, 2.2, model_growth_rate_germline_gene_glm$p.value[15], model_growth_rate_germline_gene_glm$p.stars[15], show_values = FALSE))       # PARPi
-fig5b
-ggsave(paste0(figures_save_path, "Figure5B_GrowthRate_Gene_Germline.png"), fig5b, width = 15, height = 8, units = "in", dpi = 300)
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 5, 0.75, 1, model_growth_rate_germline_gene_glm$p.value[11], model_growth_rate_germline_gene_glm$p.stars[11], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 6, 0.75, 1.25, model_growth_rate_germline_gene_glm$p.value[12], model_growth_rate_germline_gene_glm$p.stars[12], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 7, 1, 1.25, model_growth_rate_germline_gene_glm$p.value[13], model_growth_rate_germline_gene_glm$p.stars[13], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 4, 1.8, 2.2, model_growth_rate_germline_gene_glm$p.value[18], model_growth_rate_germline_gene_glm$p.stars[18], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +      # Carboplatin to PARPi
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 5.5, 1, 1.8, model_growth_rate_germline_gene_glm$p.value[14], model_growth_rate_germline_gene_glm$p.stars[14], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +      # Carboplatin
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene == "CHEK2"), 6, 1.25, 2.2, model_growth_rate_germline_gene_glm$p.value[15], model_growth_rate_germline_gene_glm$p.stars[15], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6))       # PARPi
+fig5c
+pdf(paste0(figures_save_path, "Figure5C_GrowthRate_Gene_Germline.pdf"), width = 15, height = 8)
+fig5c
+dev.off()
 ```
 
-# Figure 6B
+# Figure 6B - Treatment Expands BRCA;TP53 Mutants in Peripheral Blood
 ```{r fig6b, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
-fig6b <- mouse_data[["Figure 6B"]] %>%
-    filter(!grepl("WT", Cohort)) %>%
-    group_by(Cohort, Week) %>%
-    summarise(mean_value = mean(CD45.2_Cells, na.rm = TRUE), sd_value = sd(CD45.2_Cells, na.rm = TRUE), sem_value = sd(CD45.2_Cells, na.rm = TRUE)/sqrt(n())) %>%
-    mutate(
-        Cohort = case_when(
-            Cohort == "BRCA1 Vehicle" ~ "BRCA1 fl/+ Vehicle",
-            Cohort == "BRCA1 Cisplatin" ~ "BRCA1 fl/+ Cisplatin",
-            Cohort == "BRCA1 Talazoparib" ~ "BRCA1 fl/+ Talazoparib",
-            Cohort == "WT Vehicle" ~ "WT Vehicle",
-            Cohort == "WT Cisplatin" ~ "WT Cisplatin",
-            Cohort == "WT Talazoparib" ~ "WT Talazoparib"
-        ),
-        Drug = case_when(
-            grepl("Vehicle", Cohort) ~ "Vehicle",
-            grepl("Cisplatin", Cohort) ~ "Cisplatin",
-            grepl("Talazoparib", Cohort) ~ "Talazoparib"
-        ),
-        Cohort = factor(Cohort, levels = c("BRCA1 fl/+ Vehicle", "BRCA1 fl/+ Cisplatin", "BRCA1 fl/+ Talazoparib")),
-        Drug = factor(Drug, levels = c("Vehicle", "Cisplatin", "Talazoparib"))
+fig6b_df <- mouse_data[["Figure 6B"]] %>%
+    mutate(Mouse_Cohort = paste0(Mouse, " - ", Cohort))
+
+anova_model_fig6b <- map_dfr(combn(unique(fig6b_df$Cohort), 2, simplify = FALSE), function(pair) {
+    print(pair)
+    aov_ez(
+        "Mouse_Cohort",
+        "CD45.2_Cells",
+        fig6b_df %>% filter(Cohort == pair[1] | Cohort == pair[2]),
+        within = c("Week"),
+        between = c("Cohort")
     ) %>%
-    ggplot(
-        aes(
-            x = factor(Week),
-            y = mean_value,
-            fill = Cohort,
-            color = Cohort,
-            shape = Cohort,
-            group = Cohort
+    emmeans(., ~ Cohort) %>% 
+    pairs() %>% 
+    summary() %>%
+    mutate(
+        p.stars = case_when(
+            p.value < 0.001 ~ "***",
+            p.value < 0.01 ~ "**",
+            p.value < 0.05 ~ "*",
+            TRUE ~ ""
         )
-    ) +
-    geom_point(size = 8) +
-    geom_line() +
-    geom_errorbar(
-        aes(
-            ymin = mean_value - sem_value,
-            ymax = mean_value + sem_value
-        ),
-        width = 0.5
-    ) +
-    labs(
-        x = "Weeks Post-Treatment",
-        y = expression(atop("%" ~ Brca1^"fl/+"*";"*Trp53^"R172H/+" ~ "Cells", "(Normalized to Vehicle)")),
-        title = "Total Blood Leukocytes",
-        fill = "Cohort",
-        color = "Cohort"
-    ) +
-    panel_theme_basic +
-    scale_fill_nejm() +
-    scale_color_nejm() +
-    scale_shape_manual(values = c(15, 16, 17, 0, 1, 2)) +
-    theme(
-        legend.position = "right",
-        legend.direction = "vertical",
-        plot.margin = margin(1, 1, 1, 1, "cm"),
-        plot.title = element_text(hjust = 0.5)
-    ) +
-    ylim(0, 2.5) + 
-    scale_x_discrete(limits = as.character(0:13), expand = c(0, 0.5), breaks = c(0, 4, 8, 12)) + 
-    annotate(geom = "rect", xmin = 1, xmax = 5, ymin = 0, ymax = 0.2, fill = "black")
+    )
+})
+anova_model_fig6b
+
+fig6b <- make_mouse_cell_plot(
+    mouse_data[["Figure 6B"]] %>%
+        mutate(Cohort = factor(Cohort, levels = c("Vehicle", "Cisplatin", "Talazoparib"))),
+    cell_col = "CD45.2_Cells",
+    y_limits = c(0, 3.5),
+    title = "", y_lab = expression(atop("%" ~ Brca1^"fl/+"*";"*Trp53^"R172H/+" ~ "Cells", "(Normalized to 0-Week)"))
+)
 fig6b
-ggsave(paste0(figures_save_path, "Figure6B_PeripheralBloodChimerism.png"), fig6b, width = 10, height = 6, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure6B_PeripheralBloodChimerism.pdf"), width = 10, height = 6)
+fig6b
+dev.off()
 ```
 
-# Figure 6C
+# Figure 6C - Treatment Expands BRCA;TP53 Mutants in Bone Marrow
 ```{r fig6c, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
 fig6c <- mouse_data[["Figure 6C"]] %>%
     pivot_longer(
@@ -1206,7 +1721,7 @@ fig6c <- mouse_data[["Figure 6C"]] %>%
     geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
     labs(
         x = "",
-        y = expression("%"~BRCA1^"fl/+"*";"*Trp53^"R172H/+"~Cells),
+        y = expression("%"~Brca1^"fl/+"*";"*Trp53^"R172H/+"~Cells),
         fill = "Cohort",
         title = "Bone Marrow Chimerism"
     ) +
@@ -1220,10 +1735,12 @@ fig6c <- mouse_data[["Figure 6C"]] %>%
     ) +
     scale_y_log10(breaks = c(1, 10, 100), labels = c(1, 10, 100), limits = c(1, 100))
 fig6c
-ggsave(paste0(figures_save_path, "Figure6C_BoneMarrowChimerism.png"), fig6c, width = 10, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure6C_BoneMarrowChimerism.pdf"), width = 8, height = 8)
+fig6c
+dev.off()
 ```
 
-# Figure 6D
+# Figure 6D - Chimerism 12 weeks post-treatmentin peripheral blood
 ```{r fig6d, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
 fig6d_to_plot <- mouse_data[["Figure 6D"]] %>%
     pivot_longer(
@@ -1234,8 +1751,8 @@ fig6d_to_plot <- mouse_data[["Figure 6D"]] %>%
     filter(!is.na(CD45.2_Cells)) %>%
     mutate(
         Cohort = factor(Cohort, levels = c("Vehicle", "Cisplatin", "Talazoparib")),
-        Background = ifelse(Background == "BRCA", "BRCA1 fl/+", Background),
-        Background = factor(Background, levels = c("WT", "BRCA1 fl/+"))
+        Background = ifelse(Background == "BRCA", "Brca1 fl/+", Background),
+        Background = factor(Background, levels = c("WT", "Brca1 fl/+"))
     )
 
 fig6d <- fig6d_to_plot %>%
@@ -1260,18 +1777,21 @@ fig6d <- fig6d_to_plot %>%
         legend.position = "right",
         legend.direction = "vertical",
         plot.margin = margin(1, 1, 1, 1, "cm"),
-        plot.title = element_text(hjust = 0.5)
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
     ) +
-    geom_signif(data = fig6d_to_plot, y_position = 3.5, xmin = 0.85, xmax = 1.84, annotations = "***", tip_length = 0.05, textsize = 8) +
-    geom_signif(data = fig6d_to_plot, y_position = 3.8, xmin = 1.15, xmax = 3.15, annotations = "*", tip_length = 0.05, textsize = 8) +
-    geom_signif(data = fig6d_to_plot, y_position = 3.5, xmin = 1.86, xmax = 2.85, annotations = "**", tip_length = 0.05, textsize = 8) +
-    geom_signif(data = fig6d_to_plot, y_position = 3, xmin = 1.85, xmax = 2.15, annotations = "****", tip_length = 0.05, textsize = 8) +
-    geom_signif(data = fig6d_to_plot, y_position = 2.5, xmin = 2.85, xmax = 3.15, annotations = "****", tip_length = 0.05, textsize = 8)
+    geom_signif(data = fig6d_to_plot, y_position = 3.5, xmin = 0.85, xmax = 1.84, annotations = "P=0.0002", tip_length = 0.05, textsize = 6) +
+    geom_signif(data = fig6d_to_plot, y_position = 3.8, xmin = 1.15, xmax = 3.15, annotations = "P=0.0236", tip_length = 0.05, textsize = 6) +
+    geom_signif(data = fig6d_to_plot, y_position = 3.5, xmin = 1.86, xmax = 2.85, annotations = "P=0.0118", tip_length = 0.05, textsize = 6) +
+    geom_signif(data = fig6d_to_plot, y_position = 3, xmin = 1.85, xmax = 2.15, annotations = "P<0.0001", tip_length = 0.05, textsize = 6) +
+    geom_signif(data = fig6d_to_plot, y_position = 2.5, xmin = 2.85, xmax = 3.15, annotations = "P=0.0016", tip_length = 0.05, textsize = 6)
 fig6d
-ggsave(paste0(figures_save_path, "Figure6D_LeukocyteChimerism.png"), fig6d, width = 10, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure6D_LeukocyteChimerism.pdf"), width = 8, height = 8)
+fig6d
+dev.off()
 ```
 
-# Figure 6E
+# Figure 6E -  Chimerism 12 weeks post-treatmentin bone marrow
 ```{r fig6e, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
 fig6e_to_plot <- mouse_data[["Figure 6E"]] %>%
     pivot_longer(
@@ -1282,8 +1802,8 @@ fig6e_to_plot <- mouse_data[["Figure 6E"]] %>%
     filter(!is.na(CD45.2_Cells)) %>%
     mutate(
         Cohort = factor(Cohort, levels = c("Vehicle", "Cisplatin", "Talazoparib")),
-        Background = ifelse(Background == "BRCA", "BRCA1 fl/+", Background),
-        Background = factor(Background, levels = c("WT", "BRCA1 fl/+"))
+        Background = ifelse(Background == "BRCA", "Brca1 fl/+", Background),
+        Background = factor(Background, levels = c("WT", "Brca1 fl/+"))
     )
 fig6e <- fig6e_to_plot %>%
     ggplot(
@@ -1307,21 +1827,285 @@ fig6e <- fig6e_to_plot %>%
         legend.position = "right",
         legend.direction = "vertical",
         plot.margin = margin(1, 1, 1, 1, "cm"),
-        plot.title = element_text(hjust = 0.5)
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
     ) +
     ylim(NA, 3) +
-    geom_signif(data = fig6d_to_plot, y_position = 2.8, xmin = 0.85, xmax = 1.84, annotations = "***", tip_length = 0.05, textsize = 8) +
-    geom_signif(data = fig6d_to_plot, y_position = 2.8, xmin = 1.85, xmax = 2.15, annotations = "***", tip_length = 0.05, textsize = 8)
+    geom_signif(data = fig6e_to_plot, y_position = 2.5, xmin = 0.85, xmax = 1.84, annotations = "P=0.0001", tip_length = 0.05, textsize = 6) +
+    geom_signif(data = fig6e_to_plot, y_position = 2.8, xmin = 1.85, xmax = 2.15, annotations = "P=0.0003", tip_length = 0.05, textsize = 6)
 fig6e
-ggsave(paste0(figures_save_path, "Figure6E_BoneMarrowChimerism.png"), fig6e, width = 10, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "Figure6E_BoneMarrowChimerism.pdf"), width = 8, height = 8)
+fig6e
+dev.off()
 ```
 
-# Supplementary Figure 1 - Spider Plots by VAF
-```{r supp_fig1, message = FALSE, warning = FALSE, fig.width=17, fig.height=10}
+# Figure 7 - BRCA Het increases DNA Damage along with TP53 Mutations
+```{r fig7, message = FALSE, warning = FALSE, fig.width=17, fig.height=10}
+fig7b <- mouse_data[["Figure 7B"]] %>%
+    pivot_longer(cols = c("Cre_Ctrl", "Cre_+Tal", "R172H_Het_Ctrl", "R172H_Het_+Tal", "BRCA_Het_Ctrl", "BRCA_Het_+Tal", "Double_Ctrl", "Double_+Tal"), names_to = "Cohort", values_to = "Data") %>%
+    mutate(Cohort = factor(Cohort, levels = c("Cre_Ctrl", "Cre_+Tal", "R172H_Het_Ctrl", "R172H_Het_+Tal", "BRCA_Het_Ctrl", "BRCA_Het_+Tal", "Double_Ctrl", "Double_+Tal"))) %>%
+    mutate(
+        Background = case_when(
+            Cohort %in% c("Cre_Ctrl", "Cre_+Tal") ~ "Cre+/-",
+            Cohort %in% c("R172H_Het_Ctrl", "R172H_Het_+Tal") ~ "Trp53R172H/+",
+            Cohort %in% c("BRCA_Het_Ctrl", "BRCA_Het_+Tal") ~ "Brca1fl/+",
+            Cohort %in% c("Double_Ctrl", "Double_+Tal") ~ "Trp53R172H/+; Brca1fl/+"
+        ),
+        Background = factor(
+            Background,
+            levels = c(
+                "Cre+/-",
+                "Trp53R172H/+",
+                "Brca1fl/+",
+                "Trp53R172H/+; Brca1fl/+"
+            )
+        )
+    ) %>%
+    ggplot(
+        aes(
+            x = Cohort,
+            y = Data,
+            fill = Background
+        )
+    ) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    labs(
+        x = "",
+        y = "Olive Moment",
+        fill = "Mutation",
+        title = "Comet Assay - DNA Double Strand Breaks"
+    ) +
+    panel_theme_basic +
+    scale_fill_nejm(
+        labels = c(
+            expression(Cre^{"+/-"}),
+            expression(Trp53^{R172H/"+"}),
+            expression(Brca1^{fl/"+"}),
+            expression(Trp53^{R172H/"+"} * ";" ~ Brca1^{fl/"+"})
+        )
+    ) +
+    scale_x_discrete(
+        labels = c(
+            Cre_Ctrl = "Control",
+            `Cre_+Tal` = "Talazoparib",
+            R172H_Het_Ctrl = "Control",
+            `R172H_Het_+Tal` = "Talazoparib",
+            BRCA_Het_Ctrl = "Control",
+            `BRCA_Het_+Tal` = "Talazoparib",
+            Double_Ctrl = "Control",
+            `Double_+Tal` = "Talazoparib"
+        )
+    ) +
+    theme(
+        legend.position = "top",
+        legend.direction = "horizontal",
+        plot.margin = margin(1, 1, 1, 1, "cm"),
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
+    ) +
+    # Main Groups
+    geom_signif(y_position = 75, xmin = 1, xmax = 2, annotations = "P=0.0005", tip_length = 0.02, textsize = 5) +
+    geom_signif(y_position = 75, xmin = 3, xmax = 4, annotations = "P=0.0015", tip_length = 0.02, textsize = 5) +
+    geom_signif(y_position = 75, xmin = 5, xmax = 6, annotations = "P<0.0001", tip_length = 0.02, textsize = 5) +
+    geom_signif(y_position = 75, xmin = 7, xmax = 8, annotations = "P<0.0001", tip_length = 0.02, textsize = 5) +
+    # Cre to Trp Tal
+    geom_signif(y_position = 85, xmin = 2, xmax = 4, annotations = "P=0.0364", tip_length = 0.02, textsize = 5) +
+    # Trp to Brca Tal
+    geom_signif(y_position = 85, xmin = 4, xmax = 6, annotations = "P<0.0001", tip_length = 0.02, textsize = 5) +
+    # Crep to Brca Tal
+    geom_signif(y_position = 95, xmin = 2, xmax = 6, annotations = "P<0.0001", tip_length = 0.02, textsize = 5) +
+    # Cre to Double Tal
+    geom_signif(y_position = 105, xmin = 2, xmax = 8, annotations = "P<0.0001", tip_length = 0.02, textsize = 5) +
+    # Trp to Double Tal
+    geom_signif(y_position = 115, xmin = 4, xmax = 8, annotations = "P=0.0053", tip_length = 0.02, textsize = 5)
+fig7b
+pdf(paste0(figures_save_path, "Figure7B_CometAssay.pdf"), width = 10, height = 8)
+fig7b
+dev.off()
+
+fig7c <- mouse_data[["Figure 7C"]] %>%
+    pivot_longer(cols = c("Cre_Ctrl", "Cre_+Tal", "R172H_Het_Ctrl", "R172H_Het_+Tal", "BRCA_Het_Ctrl", "BRCA_Het_+Tal", "Double_Ctrl", "Double_+Tal"), names_to = "Cohort", values_to = "Data") %>%
+    mutate(Cohort = factor(Cohort, levels = c("Cre_Ctrl", "Cre_+Tal", "R172H_Het_Ctrl", "R172H_Het_+Tal", "BRCA_Het_Ctrl", "BRCA_Het_+Tal", "Double_Ctrl", "Double_+Tal"))) %>%
+    mutate(
+        Background = case_when(
+            Cohort %in% c("Cre_Ctrl", "Cre_+Tal") ~ "Cre+/-",
+            Cohort %in% c("R172H_Het_Ctrl", "R172H_Het_+Tal") ~ "Trp53R172H/+",
+            Cohort %in% c("BRCA_Het_Ctrl", "BRCA_Het_+Tal") ~ "Brca1fl/+",
+            Cohort %in% c("Double_Ctrl", "Double_+Tal") ~ "Trp53R172H/+; Brca1fl/+"
+        ),
+        Background = factor(
+            Background,
+            levels = c(
+                "Cre+/-",
+                "Trp53R172H/+",
+                "Brca1fl/+",
+                "Trp53R172H/+; Brca1fl/+"
+            )
+        )
+    ) %>%
+    ggplot(
+        aes(
+            x = Cohort,
+            y = Data,
+            fill = Background
+        )
+    ) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    labs(
+        x = "",
+        y = "% Cells with >10 foci",
+        fill = "Mutation",
+        title = "gH2AX+ Cells"
+    ) +
+    panel_theme_basic +
+    scale_fill_nejm(
+        labels = c(
+            expression(Cre^{"+/-"}),
+            expression(Trp53^{R172H/"+"}),
+            expression(Brca1^{fl/"+"}),
+            expression(Trp53^{R172H/"+"} * ";" ~ Brca1^{fl/"+"})
+        )
+    ) +
+    scale_x_discrete(
+        labels = c(
+            Cre_Ctrl = "Control",
+            `Cre_+Tal` = "Talazoparib",
+            R172H_Het_Ctrl = "Control",
+            `R172H_Het_+Tal` = "Talazoparib",
+            BRCA_Het_Ctrl = "Control",
+            `BRCA_Het_+Tal` = "Talazoparib",
+            Double_Ctrl = "Control",
+            `Double_+Tal` = "Talazoparib"
+        )
+    ) +
+    theme(
+        legend.position = "top",
+        legend.direction = "horizontal",
+        plot.margin = margin(1, 1, 1, 1, "cm"),
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
+    ) +
+    # Main Groups
+    scale_y_continuous(limits = c(0, 140), breaks = seq(0, 100, by = 25)) +
+    geom_signif(y_position = 105, xmin = 1, xmax = 2, annotations = "P=0.6769", tip_length = 0.02, textsize = 5) +
+    geom_signif(y_position = 105, xmin = 3, xmax = 4, annotations = "P=0.0486", tip_length = 0.02, textsize = 5) +
+    geom_signif(y_position = 105, xmin = 5, xmax = 6, annotations = "P<0.0001", tip_length = 0.02, textsize = 5) +
+    geom_signif(y_position = 105, xmin = 7, xmax = 8, annotations = "P=0.0469", tip_length = 0.02, textsize = 5) +
+    # Trp to Brca Ctrl
+    geom_signif(y_position = 115, xmin = 4, xmax = 6, annotations = "P=0.0013", tip_length = 0.02, textsize = 5) +
+    # Cre to Brca Tal
+    geom_signif(y_position = 125, xmin = 2, xmax = 6, annotations = "P<0.0001", tip_length = 0.02, textsize = 5) +
+    # Cre to Double Het Tal
+    geom_signif(y_position = 135, xmin = 2, xmax = 8, annotations = "P=0.0053", tip_length = 0.02, textsize = 5)
+fig7c
+pdf(paste0(figures_save_path, "Figure7C_gH2AX.pdf"), width = 10, height = 8)
+fig7c
+dev.off()
+
+fig7d <- mouse_data[["Figure 7D"]] %>%
+    pivot_longer(cols = c("Cre_Ctrl", "Cre_+Tal", "R172H_Het_Ctrl", "R172H_Het_+Tal", "BRCA_Het_Ctrl", "BRCA_Het_+Tal", "Double_Ctrl", "Double_+Tal"), names_to = "Cohort", values_to = "Data") %>%
+    mutate(Cohort = factor(Cohort, levels = c("Cre_Ctrl", "Cre_+Tal", "R172H_Het_Ctrl", "R172H_Het_+Tal", "BRCA_Het_Ctrl", "BRCA_Het_+Tal", "Double_Ctrl", "Double_+Tal"))) %>%
+    mutate(
+        Background = case_when(
+            Cohort %in% c("Cre_Ctrl", "Cre_+Tal") ~ "Cre+/-",
+            Cohort %in% c("R172H_Het_Ctrl", "R172H_Het_+Tal") ~ "Trp53R172H/+",
+            Cohort %in% c("BRCA_Het_Ctrl", "BRCA_Het_+Tal") ~ "Brca1fl/+",
+            Cohort %in% c("Double_Ctrl", "Double_+Tal") ~ "Trp53R172H/+; Brca1fl/+"
+        ),
+        Background = factor(
+            Background,
+            levels = c(
+                "Cre+/-",
+                "Trp53R172H/+",
+                "Brca1fl/+",
+                "Trp53R172H/+; Brca1fl/+"
+            )
+        ),
+        Treatment = case_when(
+            Cohort %in% c("Cre_Ctrl", "R172H_Het_Ctrl", "BRCA_Het_Ctrl", "Double_Ctrl") ~ "Ctrl",
+            Cohort %in% c("Cre_+Tal", "R172H_Het_+Tal", "BRCA_Het_+Tal", "Double_+Tal") ~ "+Tal"
+        )
+    ) %>%
+    ggplot(
+        aes(
+            x = Cohort,
+            y = Data,
+            fill = Background
+        )
+    ) +
+    geom_bar(aes(group = Cohort), stat = "summary", fun = "mean", position = position_dodge(width = 0.8), width = 0.7, color = "black") +
+    geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    geom_errorbar(aes(group = Cohort),stat = "summary", fun.data = "mean_se", position = position_dodge(width = 0.8), width = 0.4) +
+    labs(
+        x = "",
+        y = "% Cleaved Caspase3+ Cells",
+        fill = "Mutation",
+        title = "Cleaved Caspase3+"
+    ) +
+    panel_theme_basic +
+    scale_fill_nejm(
+        labels = c(
+            expression(Cre^{"+/-"}),
+            expression(Trp53^{R172H/"+"}),
+            expression(Brca1^{fl/"+"}),
+            expression(Trp53^{R172H/"+"} * ";" ~ Brca1^{fl/"+"})
+        )
+    ) +
+    scale_x_discrete(
+        labels = c(
+            Cre_Ctrl = "Control",
+            `Cre_+Tal` = "Talazoparib",
+            R172H_Het_Ctrl = "Control",
+            `R172H_Het_+Tal` = "Talazoparib",
+            BRCA_Het_Ctrl = "Control",
+            `BRCA_Het_+Tal` = "Talazoparib",
+            Double_Ctrl = "Control",
+            `Double_+Tal` = "Talazoparib"
+        )
+    ) +
+    theme(
+        legend.position = "top",
+        legend.direction = "horizontal",
+        plot.margin = margin(1, 1, 1, 1, "cm"),
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
+    ) +
+    # Main Groups
+    scale_y_continuous(limits = c(0, 130), breaks = seq(0, 100, by = 25), expand = expansion(mult = c(0, 0.05))) +
+    geom_signif(y_position = 85, xmin = 1, xmax = 2, annotations = "P<0.0001", tip_length = 0.02, textsize = 5) +
+    geom_signif(y_position = 85, xmin = 3, xmax = 4, annotations = "P=0.0085", tip_length = 0.02, textsize = 5) +
+    geom_signif(y_position = 85, xmin = 5, xmax = 6, annotations = "P<0.0001", tip_length = 0.02, textsize = 5) +
+    geom_signif(y_position = 85, xmin = 7, xmax = 8, annotations = "P=0.0007", tip_length = 0.02, textsize = 5) +
+    # Brca to Double Het Ctrl
+    geom_signif(y_position = 95, xmin = 5, xmax = 7, annotations = "P=0.0006", tip_length = 0.02, textsize = 5) +
+    # Cre to Double Het Ctrl
+    geom_signif(y_position = 105, xmin = 1, xmax = 7, annotations = "P=0.0277", tip_length = 0.02, textsize = 5) +
+    # Brca to Double Het Tal
+    geom_signif(y_position = 115, xmin = 6, xmax = 8, annotations = "P=0.0305", tip_length = 0.02, textsize = 5) +
+    # Trp to Double Het Tal
+    geom_signif(y_position = 125, xmin = 4, xmax = 8, annotations = "P=0.0177", tip_length = 0.02, textsize = 5)
+fig7d
+pdf(paste0(figures_save_path, "Figure7D_CleavedCaspase3.pdf"), width = 10, height = 8)
+fig7d
+dev.off()
+```
+
+# Extended Data Figure 1 - Spider Plots by VAF
+```{r extdata_fig1, message = FALSE, warning = FALSE, fig.width=17, fig.height=10}
 avg_change_a <- timepoints %>% filter(VAF_Category == "<=2%") %>% filter(!is.na(change_in_VAF_months), change_in_months < 75, Gene_Class == 'DDR'| Gene_Class == 'DTA') %>% group_by(Gene_Class, Cohort) %>% summarise(n = mean(change_in_VAF))
 avg_change_b <- timepoints %>% filter(VAF_Category == ">2%") %>% filter(!is.na(change_in_VAF_months), change_in_months < 75, Gene_Class == 'DDR'| Gene_Class == 'DTA') %>% group_by(Gene_Class, Cohort) %>% summarise(n = mean(change_in_VAF))
 
-supp_fig1_a <- timepoints %>%
+timepoints %>%
+    filter(VAF_Category == ">2%") %>%
+    group_by(Cohort) %>%
+    summarise(
+        mean_change_in_VAF = median(change_in_VAF),
+        mean_change_in_VAF_per_month = median(change_in_VAF_months)
+    )
+
+extdata_fig1_a <- timepoints %>%
     filter(VAF_Category == "<=2%") %>%
     filter(!is.na(change_in_VAF_months), change_in_months < 75, Gene_Class == 'DDR'| Gene_Class == 'DTA') %>%
     ggplot(
@@ -1359,7 +2143,7 @@ supp_fig1_a <- timepoints %>%
         axis.text.y = element_text(size = 16)
     )
 
-supp_fig1_b <- timepoints %>%
+extdata_fig1_b <- timepoints %>%
     filter(VAF_Category == ">2%") %>%
     filter(!is.na(change_in_VAF_months), change_in_months < 75, Gene_Class == 'DDR'| Gene_Class == 'DTA') %>%
     ggplot(
@@ -1397,12 +2181,12 @@ supp_fig1_b <- timepoints %>%
         axis.text.y = element_text(size = 16)
     )
 
-legend <- ggpubr::get_legend(supp_fig1_a)
-supp_fig1_a <- supp_fig1_a + theme(legend.position = "none")
-supp_fig1_b <- supp_fig1_b + theme(legend.position = "none")
+legend <- ggpubr::get_legend(extdata_fig1_a)
+extdata_fig1_a <- extdata_fig1_a + theme(legend.position = "none")
+extdata_fig1_b <- extdata_fig1_b + theme(legend.position = "none")
 
-supp_fig1 <- plot_grid(
-    plot_grid(supp_fig1_a, supp_fig1_b, labels = c("a", "b"), label_size = 30),
+extdata_fig1 <- plot_grid(
+    plot_grid(extdata_fig1_a, extdata_fig1_b, labels = c("a", "b"), label_size = 30),
     ggdraw() + draw_label("Months", size = 20),
     legend,
     ncol = 1, nrow = 3,
@@ -1413,12 +2197,71 @@ supp_fig1 <- plot_grid(
     draw_label("DTA", x = 0.25, y = 0.5, size = 20) +
     draw_label("DDR", x = 0.75, y = 0.97, size = 20) +
     draw_label("DTA", x = 0.75, y = 0.5, size = 20)
-supp_fig1
-ggsave(paste0(figures_save_path, "SuppFigure1_SpiderPlots_VAF.png"), supp_fig1, width = 17, height = 10, units = "in", dpi = 300)
+extdata_fig1
+pdf(paste0(figures_save_path, "ExtFigure1_SpiderPlots_VAF.pdf"), width = 17, height = 10)
+extdata_fig1
+dev.off()
 ```
 
-# Supplementary Figure 2 - Growth Rate by Cancer Types
-```{r supp_fig2, message = FALSE, warning = FALSE, fig.width=15, fig.height=8}
+# Extended Data Figure 2 - Growth Rates for VAF Category
+```{r extdata_fig2_growth_vaf, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+df_to_plot <- timepoints %>%
+    filter(growth_rate != Inf & growth_rate != -Inf) %>%
+    filter(Gene_Class == "DDR" | Gene_Class == "DTA")
+
+#Statistics
+model_growth_rate_class_lessthan2 <- model_growth_rate_class_fun(df_to_plot %>% filter(VAF_Category == "<=2%"))
+model_growth_rate_class_greaterthan2 <- model_growth_rate_class_fun(df_to_plot %>% filter(VAF_Category == ">2%"))
+
+counts <- df_to_plot %>%
+    group_by(Cohort, Gene_Class, VAF_Category) %>%
+    summarise(n = n(), .groups = "drop")
+
+extdata_fig2 <- df_to_plot %>%
+    ggplot(
+        aes(
+            x = Cohort,
+            y = growth_rate,
+            fill = Cohort,
+        )
+    ) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    geom_text(data = counts, aes(label = n, y = 0.06), size = 8, position = position_dodge(width = 0.8)) +
+    labs(
+        x = "",
+        y = "Growth Rate",
+        fill = "Cohort",
+        title = "Growth Rate by VAF Category"
+    ) +
+    panel_theme_basic +
+    scale_fill_manual(values = treatment_colors) +
+    scale_color_manual(values = treatment_colors) +
+    theme(
+        legend.position = "right",
+        legend.direction = "vertical",
+        plot.margin = margin(0, 0, 0, 1, "cm"),
+        plot.title = element_text(hjust = 0.5, size = 20),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16)
+    ) +
+    scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05), limits = c(NA, 8)) +
+    facet_wrap(Gene_Class ~ VAF_Category) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == "<=2%") %>% filter(Gene_Class == "DDR"), 6, 1, 2, model_growth_rate_class_lessthan2$p.value[3], model_growth_rate_class_lessthan2$p.stars[3], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == "<=2%") %>% filter(Gene_Class == "DDR"), 6.5, 1, 3, model_growth_rate_class_lessthan2$p.value[4], model_growth_rate_class_lessthan2$p.stars[4], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == "<=2%") %>% filter(Gene_Class == "DDR"), 7, 2, 3, model_growth_rate_class_lessthan2$p.value[6], model_growth_rate_class_lessthan2$p.stars[6], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == ">2%") %>% filter(Gene_Class == "DDR"), 6, 1, 2, model_growth_rate_class_greaterthan2$p.value[3], model_growth_rate_class_greaterthan2$p.stars[3], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == ">2%") %>% filter(Gene_Class == "DDR"), 6.5, 1, 3, model_growth_rate_class_greaterthan2$p.value[4], model_growth_rate_class_greaterthan2$p.stars[4], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == ">2%") %>% filter(Gene_Class == "DDR"), 7, 2, 3, model_growth_rate_class_greaterthan2$p.value[6], model_growth_rate_class_greaterthan2$p.stars[6], show_values = TRUE, hide_ns = TRUE))
+
+extdata_fig2
+pdf(paste0(figures_save_path, "ExtFigure2_GrowthRates_VAFCategory.pdf"), width = 14, height = 10)
+extdata_fig2
+dev.off()
+```
+
+# Extended Data Figure 3A - Growth Rate by Cancer Types
+```{r extdata_fig3a, message = FALSE, warning = FALSE, fig.width=15, fig.height=8}
 df_to_plot <- timepoints %>%
     left_join(
         table_demographics %>% select(DEID, CANCER.DX),
@@ -1430,7 +2273,11 @@ df_to_plot <- timepoints %>%
     filter(growth_rate != Inf & growth_rate != -Inf) %>%
     filter(Gene_Class == "DDR" | Gene_Class == "DTA")
 
-supp_fig2 <- df_to_plot %>%
+counts <- df_to_plot %>%
+    group_by(Cohort, Gene_Class, CANCER.DX) %>%
+    summarise(n = n(), .groups = "drop")
+
+extdata_fig3a <- df_to_plot %>%
     ggplot(
         aes(
             x = Cohort,
@@ -1441,6 +2288,7 @@ supp_fig2 <- df_to_plot %>%
     geom_hline(yintercept = 0, color = "black", alpha = 0.3) +
     geom_boxplot(outlier.shape = NA) +
     geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    geom_text(data = counts, aes(label = n, y = 0.06), size = 4, position = position_dodge(width = 0.8)) +
     labs(
         x = "",
         y = "Growth Rate",
@@ -1457,12 +2305,112 @@ supp_fig2 <- df_to_plot %>%
     ) +
     scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05)) +
     facet_wrap(~ Gene_Class)
-supp_fig2
-ggsave(paste0(figures_save_path, "SuppFigure2_GrowthRate_CancerTypes.png"), supp_fig2, width = 10, height = 8, units = "in", dpi = 300)
+extdata_fig3a
+pdf(paste0(figures_save_path, "ExtFigure3A_GrowthRate_CancerTypes.pdf"), width = 14, height = 8)
+extdata_fig3a
+dev.off()
 ```
 
-# Supplemental Figure 3 - MoChA Comparison of mCA Detection with other Cohorts
-```{r supp_fig3, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+# Extended Data Figure 3B - Growth Rate by Gene no co-mutation
+```{r extdata_fig3b, message = FALSE, warning = FALSE, fig.width=15, fig.height=8}
+# Which patients have TP53 mutations?
+has_tp53_ch <- timepoints %>%
+    filter(Gene == "TP53") %>%
+    pull(DeID) %>%
+    unique()
+# Which patients have PPM1D mutations?
+has_ppm1d_ch <- timepoints %>%
+    filter(Gene == "PPM1D") %>%
+    pull(DeID) %>%
+    unique()
+
+# These patients ONLY have TP53 mutations and no PPM1D mutations
+tp53_only <- setdiff(has_tp53_ch, has_ppm1d_ch)
+# These patients ONLY have PPM1D mutations and no TP53 mutations
+ppm1d_only <- setdiff(has_ppm1d_ch, has_tp53_ch)
+
+df_to_plot <- timepoints %>% 
+    #filter(Gene_Class == "DDR") %>%
+    filter(Gene %in% c("TP53", "PPM1D")) %>%
+    filter(growth_rate != "Inf" & growth_rate != "-Inf") %>%
+    filter(DeID %in% c(tp53_only, ppm1d_only))
+
+model_growth_rate_tp53_ppm1d_only <- purrr::cross_df(list(
+    gene = c("TP53", "PPM1D"),
+    comparison = c("all", "no_untreated")
+)) %>%
+    pmap_dfr(function(gene, comparison) {
+        print(paste(gene, comparison))
+        if (comparison == "all") {
+            df_subset <- df_to_plot %>% filter(Gene == gene)
+            model <- glm(
+                formula = growth_rate ~ Cohort + AGE + SEX + RACE,
+                data = df_subset
+            ) 
+        } else if (comparison == "no_untreated") {
+            df_subset <- df_to_plot %>% filter(Gene == gene & Cohort != "Healthy")
+            model <- glm(
+                formula = growth_rate ~ Cohort + AGE + SEX + RACE,
+                data = df_subset
+            )
+        }
+        model %>% 
+            sjPlot::get_model_data(type = "est") %>%
+            filter(grepl("Cohort", term)) %>%
+            mutate(
+                term = case_when(
+                        term == "CohortCarboplatin" ~ "UntreatedVSCarboplatin",
+                        term == "CohortPARPi" ~ ifelse(comparison == "all", "UntreatedVSPARPi", "CarboplatinVSPARPi"),
+                        TRUE ~ term
+                    ),
+                gene = gene, 
+                comparison = comparison
+            )
+    })
+
+counts <- df_to_plot %>%
+    group_by(Cohort, Gene) %>%
+    summarise(n = n(), .groups = "drop")
+
+extdata_fig3b <- df_to_plot %>%
+    ggplot(
+        aes(
+            x = Gene,
+            y = growth_rate,
+            fill = Cohort
+        )
+    ) +
+    geom_hline(yintercept = 0, color = "black", alpha = 0.3) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    geom_text(data = counts, aes(label = n, y = 0.06), size = 8, position = position_dodge(width = 0.8)) +
+    labs(
+        x = "",
+        y = "Growth Rate",
+        fill = "Cohort"
+    ) +
+    panel_theme_basic +
+    scale_fill_manual(values = treatment_colors) +
+    theme(
+        legend.position = "right",
+        legend.direction = "vertical",
+        plot.margin = margin(2, 0, 0, 1, "cm")
+    ) +
+    scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05), limit = c(NA, 1.5)) +
+    do.call(geom_signif, default_sig(5, 0.75, 1, model_growth_rate_tp53_ppm1d_only$p.value[1], model_growth_rate_tp53_ppm1d_only$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(6, 0.75, 1.25, model_growth_rate_tp53_ppm1d_only$p.value[2], model_growth_rate_tp53_ppm1d_only$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(7.1, 1, 1.25, model_growth_rate_tp53_ppm1d_only$p.value[5], model_growth_rate_tp53_ppm1d_only$p.stars[5], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(5, 1.75, 2, model_growth_rate_tp53_ppm1d_only$p.value[3], model_growth_rate_tp53_ppm1d_only$p.stars[3], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(6, 1.75, 2.25, model_growth_rate_tp53_ppm1d_only$p.value[4], model_growth_rate_tp53_ppm1d_only$p.stars[4], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig(7.1, 2, 2.25, model_growth_rate_tp53_ppm1d_only$p.value[6], model_growth_rate_tp53_ppm1d_only$p.stars[6], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6))
+extdata_fig3b
+pdf(paste0(figures_save_path, "ExtFigure3B_GrowthRate_Gene_no_comutation.pdf"), width = 10, height = 8)
+extdata_fig3b
+dev.off()
+```
+
+# Extended Data Figure 4 - MoChA Comparison of mCA Detection with other Cohorts
+```{r extdata_fig4, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
 mocha_comp <- rbind(
     ukb_mocha_loh %>%
         group_by(CHR, COPY_CHANGE) %>%
@@ -1495,22 +2443,22 @@ mocha_comp <- rbind(
             chrom = sub("chr", "", chrom)
         ) %>%
         filter(type != "" & type != "Missing") %>%
-        rename(chr = chrom, COPY_CHANGE = type) %>%
+        dplyr::rename(chr = chrom, COPY_CHANGE = type) %>%
         group_by(chr, COPY_CHANGE) %>%
         summarise(n = n(), .groups = "drop") %>%
         mutate(
             prop = (n / sum(n)) *-1,
-            cohort = "PARPi/Carboplatin"
+            cohort = "PARPi/Carbo"
         )
 ) %>%
     filter(chr != "X" & chr != "Y") %>%
     mutate(
         chr = factor(as.character(chr), levels = as.character(1:23)),
-        cohort = factor(cohort, levels = c("UK Biobank", "Biobank Japan", "PARPi/Carboplatin")),
+        cohort = factor(cohort, levels = c("UK Biobank", "Biobank Japan", "PARPi/Carbo")),
     )
 
-supp_fig3a <- mocha_comp %>%
-    filter(cohort == "UK Biobank" | cohort == "PARPi/Carboplatin") %>%
+extdata_fig4a <- mocha_comp %>%
+    filter(cohort == "UK Biobank" | cohort == "PARPi/Carbo") %>%
     ggplot(
         aes(
             x = chr,
@@ -1525,7 +2473,7 @@ supp_fig3a <- mocha_comp %>%
     labs(
         x = "Chromosome",
         y = "Percent of Cohort",
-        fill = "Cohort"
+        fill = "Data"
     ) +
     panel_theme_basic +
     scale_fill_manual(values = c("#CC0000", "#0072B2")) +
@@ -1535,8 +2483,8 @@ supp_fig3a <- mocha_comp %>%
         legend.text = element_text(size = 16)
     ) 
 
-supp_fig3b <- mocha_comp %>%
-    filter(cohort == "Biobank Japan" | cohort == "PARPi/Carboplatin") %>%
+extdata_fig4b <- mocha_comp %>%
+    filter(cohort == "Biobank Japan" | cohort == "PARPi/Carbo") %>%
     ggplot(
         aes(
             x = chr,
@@ -1551,7 +2499,7 @@ supp_fig3b <- mocha_comp %>%
     labs(
         x = "Chromosome",
         y = "",
-        fill = "Cohort"
+        fill = "Data"
     ) +
     panel_theme_basic +
     scale_fill_manual(values = c("#D55E00", "#0072B2")) +
@@ -1561,18 +2509,20 @@ supp_fig3b <- mocha_comp %>%
         legend.text = element_text(size = 16)
     )
 
-supp_fig3 <- plot_grid(
-    supp_fig3a, supp_fig3b,
+extdata_fig4 <- plot_grid(
+    extdata_fig4a, extdata_fig4b,
     labels = c("a", "b"),
     label_size = 30,
     ncol = 2
 )
-supp_fig3
-ggsave(paste0(figures_save_path, "SuppFigure3_MoChA_Comparison.png"), supp_fig3, width = 15, height = 15, units = "in", dpi = 300)
+extdata_fig4
+pdf(paste0(figures_save_path, "ExtFigure4_mCA_Comparison.pdf"), width = 12, height = 14)
+extdata_fig4
+dev.off()
 ```
 
-# Supplemental Figure 4A - MoChA CF Growth Rate
-```{r supp_fig4, message = FALSE, warning = FALSE, fig.width=15, fig.height=8}
+# Extended Data Figure 5A - MoChA CF Growth Rate
+```{r extdata_fig5a, message = FALSE, warning = FALSE, fig.width=15, fig.height=8}
 df_to_plot <- mocha_timepoints %>%
     filter(growth_rate != Inf & growth_rate != -Inf) %>%
     filter(mCA_Detected != "Pre-Pre Treatment Only" & mCA_Detected != "Post-Post Treatment Only") %>%
@@ -1587,7 +2537,7 @@ model_mocha_mca_glm <- rbind(
     glm(
         formula = growth_rate ~ Cohort,
         data = df_to_plot %>%
-            filter(Cohort != "No Treatment") %>%
+            filter(Cohort != "Healthy") %>%
             mutate(Cohort = factor(Cohort, levels = c("Carboplatin", "PARPi")))
     ) %>%
     sjPlot::get_model_data(type = "est") %>%
@@ -1598,7 +2548,7 @@ counts <- df_to_plot %>%
     group_by(Cohort) %>%
     summarise(n = n(), .groups = "drop")
 
-supp_fig4a <- df_to_plot %>%
+extdata_fig5a <- df_to_plot %>%
     ggplot(
         aes(
             x = Cohort,
@@ -1607,7 +2557,7 @@ supp_fig4a <- df_to_plot %>%
         )
     ) +
     geom_boxplot(outlier.shape = NA) +
-    geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    geom_point(position = position_jitterdodge(jitter.width = 0.2), alpha = 0.2, color = "black") +
     geom_text(data = counts, aes(label = n, y = 0.04), size = 8, position = position_dodge(width = 0.8)) +
     geom_hline(yintercept = 0, color = "black", alpha = 0.3) +
     labs(
@@ -1618,17 +2568,22 @@ supp_fig4a <- df_to_plot %>%
     facet_wrap(~event) +
     panel_theme_basic +
     scale_fill_nejm() + 
-    theme(plot.margin = margin(1, 0, 0, 1, "cm")) +
+    theme(
+        plot.margin = margin(1, 0, 0, 1, "cm"),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+    ) +
     scale_y_continuous(trans = scales::pseudo_log_trans(0.01)) +
-    do.call(geom_signif, default_sig_data(df_to_plot, 1.8, 1, 2, model_mocha_mca_glm$p.value[1], model_mocha_mca_glm$p.stars[1], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot, 2.2, 1, 3, model_mocha_mca_glm$p.value[2], model_mocha_mca_glm$p.stars[2], show_values = FALSE)) +  
-    do.call(geom_signif, default_sig_data(df_to_plot, 2.6, 2, 3, model_mocha_mca_glm$p.value[3], model_mocha_mca_glm$p.stars[3], show_values = FALSE))
-supp_fig4a
-ggsave(paste0(figures_save_path, "SuppFigure4A_MoChA_GrowthRate.png"), supp_fig4a, width = 10, height = 8, units = "in", dpi = 300)
+    do.call(geom_signif, default_sig_data(df_to_plot, 1.8, 1, 2, model_mocha_mca_glm$p.value[1], model_mocha_mca_glm$p.stars[1], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 2.2, 1, 3, model_mocha_mca_glm$p.value[2], model_mocha_mca_glm$p.stars[2], show_values = TRUE, hide_ns = TRUE)) +  
+    do.call(geom_signif, default_sig_data(df_to_plot, 2.6, 2, 3, model_mocha_mca_glm$p.value[3], model_mocha_mca_glm$p.stars[3], show_values = TRUE, hide_ns = TRUE))
+extdata_fig5a
+pdf(paste0(figures_save_path, "ExtFigure5A_MoChA_GrowthRate.pdf"), width = 8, height = 12)
+extdata_fig5a
+dev.off()
 ```
 
-# Supplemental Figure 4B - MoChA Proportion of mCA Detected
-```{r supp_fig4b, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+# Extended Data Figure 5B - MoChA Proportion of mCA Detected
+```{r extdata_fig5b, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
 mocha_proportion_detected <- mocha_timepoints %>%
     filter(event == "mCA") %>%
     filter(mCA_Detected != "Pre-Pre Treatment Only" & mCA_Detected != "Post-Post Treatment Only") %>%
@@ -1636,7 +2591,7 @@ mocha_proportion_detected <- mocha_timepoints %>%
     group_by(mCA_Detected, Cohort) %>%
     summarise(total_patients = n(), .groups = "drop")
 
-supp_fig4b <- mocha_proportion_detected %>%
+extdata_fig5b <- mocha_proportion_detected %>%
     group_by(Cohort) %>%
     mutate(
         total_samples = sum(total_patients),
@@ -1645,7 +2600,7 @@ supp_fig4b <- mocha_proportion_detected %>%
     ungroup() %>%
     mutate(
         mCA_Detected = factor(mCA_Detected, levels = c("Both Timepoints", "Pre Treatment Only", "Post Treatment Only")),
-        Cohort = factor(Cohort, levels = c("No Treatment", "Carboplatin", "PARPi"))
+        Cohort = factor(Cohort, levels = c("Healthy", "Carboplatin", "PARPi"))
     ) %>%
     ggplot(
         aes(
@@ -1659,7 +2614,7 @@ supp_fig4b <- mocha_proportion_detected %>%
     geom_text(aes(label = scales::percent(proportion)), position = position_stack(vjust = 0.5), size = 6) +
     labs(
         x = "",
-        y = "Percent of Detectable Autosomal mCA",
+        y = "Percent of Detectable\nAutosomal mCA",
         fill = "Cohort"
     ) +
     panel_theme_basic +
@@ -1674,12 +2629,14 @@ supp_fig4b <- mocha_proportion_detected %>%
         panel.grid.minor = element_blank()
     ) +
     facet_wrap(~Cohort, ncol = 1)
-supp_fig4b
-ggsave(paste0(figures_save_path, "SuppFigure4B_MoChA_ProportionDetected.png"), supp_fig4b, width = 10, height = 10, units = "in", dpi = 300)
+extdata_fig5b
+pdf(paste0(figures_save_path, "ExtFigure5B_MoChA_ProportionDetected.pdf"), width = 10, height = 10)
+extdata_fig5b
+dev.off()
 ```
 
-# Supplemental Figure 4C - Pre-Existing DDR Mutations Promote mCA
-```{r supp_fig4c, message = FALSE, warning = FALSE, fig.width=15, fig.height=6}
+# Extended Data Figure 5C - Pre-Existing DDR Mutations Promote mCA
+```{r extdata_fig5c, message = FALSE, warning = FALSE, fig.width=15, fig.height=6}
 deid_new_mca <- mocha_timepoints %>%
     filter(event == "mCA" & mCA_Detected == "Post Treatment Only") %>%
     distinct(PatientID) %>%
@@ -1696,6 +2653,8 @@ get_deid_pre_from_timepoints <- function(gene) {
 # List of genes
 deid_pre_list <- lapply(c("TP53", "DNMT3A", "TET2", "ASXL1", "PPM1D", "CHEK2"), get_deid_pre_from_timepoints)
 names(deid_pre_list) <- paste0(c("TP53", "DNMT3A", "TET2", "ASXL1", "PPM1D", "CHEK2"), "_pre")
+
+gene_map_pre <- setNames(c("TP53", "DNMT3A", "TET2", "ASXL1", "PPM1D", "CHEK2"), paste0(c("tp53", "dnmt3a", "tet2", "asxl1", "ppm1d", "chek2"), "_pre"))
 
 model_pre_existing_gene <- map_dfr(c("TP53", "DNMT3A", "TET2", "ASXL1", "PPM1D", "CHEK2"), function(gene){
     deid_pre <- timepoints %>%
@@ -1721,16 +2680,7 @@ model_pre_existing_gene <- map_dfr(c("TP53", "DNMT3A", "TET2", "ASXL1", "PPM1D",
 })
 model_pre_existing_gene
 
-gene_map <- c(
-    "dnmt3a_pre" = "DNMT3A",
-    "tet2_pre" = "TET2",
-    "asxl1_pre" = "ASXL1",
-    "ppm1d_pre" = "PPM1D",
-    "tp53_pre" = "TP53",
-    "chek2_pre" = "CHEK2"
-)
-
-supp_fig4c_to_plot <- mocha_demographics %>%
+extdata_fig5c_to_plot <- mocha_demographics %>%
     distinct(DeID) %>%
     mutate(
         mca_post = ifelse(DeID %in% deid_new_mca, 1, 0),
@@ -1742,14 +2692,14 @@ supp_fig4c_to_plot <- mocha_demographics %>%
         chek2_pre = ifelse(DeID %in% deid_pre_list$CHEK2_pre, 1, 0)
     ) %>%
     pivot_longer(
-        cols = all_of(names(gene_map)),
+        cols = all_of(names(gene_map_pre)),
         names_to = "PreGene",
         values_to = "Pre"
     ) %>%
     mutate(
-        PreGene = gene_map[PreGene],
-        pre_existing = ifelse(Pre == 1, "Pre-Existing CH Mutation", "No Pre-Existing CH Mutation"),
-        PreGene = factor(PreGene, levels = gene_levels)
+        PreGene = gene_map_pre[PreGene],
+        pre_existing = ifelse(Pre == 1, "Yes", "No"),
+        PreGene = factor(PreGene, levels = gene_list)
     ) %>%
     group_by(PreGene, pre_existing) %>%
     summarise(
@@ -1759,7 +2709,7 @@ supp_fig4c_to_plot <- mocha_demographics %>%
         .groups = "drop"
     )
 
-supp_fig4c <- supp_fig4c_to_plot %>%
+extdata_fig5c <- extdata_fig5c_to_plot %>%
     ggplot(
         aes(
             x = PreGene,
@@ -1770,81 +2720,303 @@ supp_fig4c <- supp_fig4c_to_plot %>%
     geom_bar(stat = "identity", position = position_dodge(), color = "black") +
     labs(
         x = "",
-        y = "Percent of Patients",
-        fill = "Pre-existing Mutation"
+        y = "Percent of Patients\nwith New mCA Post Treatment",
+        fill = "Pre-existing CH Mutation"
     ) +
     panel_theme_basic +
     scale_fill_nejm() +
     scale_y_continuous(labels = scales::percent_format(), expand = c(0, 0)) +
-    theme(plot.margin = margin(1, 0, 0, 1, "cm")) +
-    do.call(geom_signif, default_sig_data(supp_fig5c_to_plot, 0.15, 0.85, 1.15, model_pre_existing_gene$p.value[2], model_pre_existing_gene$p.stars[2], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(supp_fig5c_to_plot, 0.15, 1.85, 2.15, model_pre_existing_gene$p.value[3], model_pre_existing_gene$p.stars[3], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(supp_fig5c_to_plot, 0.15, 2.85, 3.15, model_pre_existing_gene$p.value[4], model_pre_existing_gene$p.stars[4], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(supp_fig5c_to_plot, 0.1, 3.85, 4.15, model_pre_existing_gene$p.value[5], model_pre_existing_gene$p.stars[5], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(supp_fig5c_to_plot, 0.11, 4.85, 5.15, model_pre_existing_gene$p.value[1], model_pre_existing_gene$p.stars[1], show_values = FALSE)) +
-    do.call(geom_signif, default_sig_data(supp_fig5c_to_plot, 0.1, 5.85, 6.15, model_pre_existing_gene$p.value[6], model_pre_existing_gene$p.stars[6], show_values = FALSE))
-supp_fig4c
-ggsave(paste0(figures_save_path, "SuppFigure4C_PreExisting_CH_Mutation.png"), supp_fig4c, width = 12, height = 8, units = "in", dpi = 300)
+    theme(
+        plot.margin = margin(1, 0, 0, 1, "cm"),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+    ) +
+    do.call(geom_signif, default_sig_data(extdata_fig5c_to_plot, 0.15, 0.85, 1.15, model_pre_existing_gene$p.value[2], model_pre_existing_gene$p.stars[2], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(extdata_fig5c_to_plot, 0.15, 1.85, 2.15, model_pre_existing_gene$p.value[3], model_pre_existing_gene$p.stars[3], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(extdata_fig5c_to_plot, 0.15, 2.85, 3.15, model_pre_existing_gene$p.value[4], model_pre_existing_gene$p.stars[4], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(extdata_fig5c_to_plot, 0.1, 3.85, 4.15, model_pre_existing_gene$p.value[5], model_pre_existing_gene$p.stars[5], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(extdata_fig5c_to_plot, 0.11, 4.85, 5.15, model_pre_existing_gene$p.value[1], model_pre_existing_gene$p.stars[1], show_values = TRUE, hide_ns = TRUE)) +
+    do.call(geom_signif, default_sig_data(extdata_fig5c_to_plot, 0.1, 5.85, 6.15, model_pre_existing_gene$p.value[6], model_pre_existing_gene$p.stars[6], show_values = TRUE, hide_ns = TRUE))
+extdata_fig5c
+pdf(paste0(figures_save_path, "ExtFigure5C_PreExisting_CH_Mutation.pdf"), width = 12, height = 8)
+extdata_fig5c
+dev.off()
 ```
 
-# Supplemental Figure 5 - CD45 Isoforms
-```{r supp_fig5, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
-supp_fig5b <- make_mouse_cell_plot(
-    mouse_data[["SuppFigure 5B"]] %>%
-        mutate(Cohort = factor(Cohort, levels = c("Vehicle", "Cisplatin", "Talazoparib"))),
-    cell_col = "WT:WT Total Leukocytes",
-    title = "WT:WT Total Leukocytes", y_lab = "CD45.2 Cells\n(Normalized to 0-Week)"
+# Extended Data Figure 6 - mCA overlap with CH Genes
+```{r extdata_fig6d, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+# DDR Genes - TP53, PPM1D, and CHEK2
+# TP53 - 17p13.1 - chr17:7,668,421-7,687,490 - chr17:7,669,609-7,676,594
+# PPM1D - 17q23.2 - chr17:60,600,193-60,666,280 - chr17:60,600,415-60,663,552
+# CHEK2 - 22q12.1 -  chr22:28,687,743-28,741,820 - chr22:28,687,897-28,734,721
+
+# Maybe check BRCA1/2 as well?
+# BRCA1 - 17q21.31 - chr17:43,044,295-43,125,364 - chr17:43,045,678-43,124,096
+# BRCA2 - 13q13.1 - chr13:32,315,508-32,400,268 - chr13:32,316,461-32,398,770
+
+mocha_df <- mocha_df %>%
+    mutate(
+        chrom_arm = case_when(
+            (p_arm == "N" | p_arm == "C") & (q_arm == "Y" | q_arm == "T") ~ paste0(chrom, "q"),
+            (p_arm == "Y" | p_arm == "T") & (q_arm == "N" | q_arm == "C") ~ paste0(chrom, "p"),
+            (p_arm == "Y" | p_arm == "T") & (q_arm == "Y" | q_arm == "T") ~ chrom,
+            TRUE ~ NA_character_
+        )
+    )
+
+# These just have pre and post
+mocha_have_pre_post <- mocha_demographics %>% group_by(DeID) %>% summarise(n = n()) %>% filter(n == 2) %>% pull(DeID)
+# These will have up to post post
+mocha_have_up_to_post_post <- mocha_demographics %>% group_by(DeID) %>% summarise(n = n()) %>% filter(n > 2 & n < 5) %>% pull(DeID)
+# These are special case
+mocha_special_case <- mocha_demographics %>% group_by(DeID) %>% summarise(n = n()) %>% filter(n == 5) %>% pull(DeID)
+
+whereincycle_info <- mocha_demographics %>%
+    mutate(
+        whereincycle = case_when(
+            DeID %in% mocha_have_pre_post ~ ifelse(whichdraw == 1, "pre", "post"),
+            DeID %in% mocha_have_up_to_post_post ~ case_when(
+                whichdraw == 1 ~ "pre-pre",
+                whichdraw == 2 ~ "pre",
+                whichdraw == 3 ~ "post",
+                whichdraw == 4 ~ "post-post",
+                TRUE ~ NA_character_
+            ),
+            DeID == "115337" ~ case_when(
+                whichdraw == 1 ~ "pre-pre",
+                whichdraw == 2 ~ "pre",
+                whichdraw == 3 ~ "post",
+                whichdraw == 4 ~ "post-post"
+            ),
+            DeID == "1537527" ~ case_when(
+                whichdraw == 1 ~ "pre-pre",
+                whichdraw == 2 ~ "pre",
+                whichdraw == 3 ~ "post",
+                whichdraw == 4 ~ "pre",
+                whichdraw == 5 ~ "post",
+            ),
+            DeID == "1540488" ~ case_when(
+                whichdraw == 1 ~ "pre-pre",
+                whichdraw == 2 ~ "pre",
+                whichdraw == 3 ~ "post",
+                whichdraw == 4 ~ "post-post"
+            ),
+            DeID == "1592759" ~ case_when(
+                whichdraw == 1 ~ "pre",
+                whichdraw == 2 ~ "post",
+                whichdraw == 3 ~ "pre",
+                whichdraw == 4 ~ "post"
+            )
+        )
+    ) %>%
+    select(DeID, SampleDeID, whereincycle, Cohort) %>%
+    unique()
+
+num_mutations_per_person_mocha <- mocha_df %>%
+    mutate(
+        type = case_when(
+            type == "CN-LOH" ~ "Copy Neutral LOH",
+            type == "Gain" ~ "Gain",
+            type == "Loss" ~ "Loss",
+            type == "Undetermined" ~ "Unknown",
+            TRUE ~ type
+        ),
+        chrom = sub("chr", "", chrom),
+        chrom_arm_type = paste0(chrom_arm, "_", type)
+    ) %>%
+    filter(type != "" & type != "Missing") %>%
+    left_join(
+        whereincycle_info,
+        by = c("DeID" = "DeID", "Sample_DeID" = "SampleDeID")
+    ) %>%
+    filter(whereincycle == "post") %>%
+    group_by(DeID, chrom_arm_type, Cohort) %>%
+    summarise(n = n()) %>%
+    pivot_wider(names_from = chrom_arm_type, values_from = n, values_fill = 0) %>%
+    ungroup()
+
+# For each person, what are the mutations they have in each chrom arm, and what is their treatment status?
+mut_table_mocha <- mocha_demographics %>%
+    filter(Duplicate == 0) %>%
+    select(DeID, SampleDeID, Cohort, AGE, Sex_Reported, Ancestry, Cohort) %>%
+    left_join(
+        whereincycle_info,
+        by = c("DeID" = "DeID", "SampleDeID" = "SampleDeID", "Cohort" = "Cohort")
+    ) %>%
+    filter(!is.na(whereincycle)) %>%
+    filter(whereincycle == "post") %>%
+    left_join(num_mutations_per_person_mocha, by = c("DeID" = "DeID", "Cohort" = "Cohort")) %>%
+    select(-SampleDeID, -whereincycle) %>%
+    group_by(DeID, AGE, Sex_Reported, Ancestry, Cohort) %>%
+    summarise_if(is.numeric, function(x) sum(x != 0, na.rm = TRUE))
+
+mocha_treatment_prop <- mut_table_mocha %>%
+    group_by(Cohort) %>%
+    dplyr::select(-AGE, -Sex_Reported, -Ancestry) %>%
+    summarise_if(is.numeric, sum, na.rm = TRUE) %>%
+    pivot_longer(cols = -Cohort, names_to = "ChromArmType", values_to = "n") %>%
+    ungroup() %>%
+    left_join(
+        mut_table_mocha %>%
+            group_by(Cohort) %>%
+            summarise(total_patients = n())
+    ) %>%
+    mutate(
+        Proportion = n / total_patients,
+        #Type = factor(Type, levels = c("unknown", "loss", "neutral", "gain"))
+        #Gene = factor(Gene, levels = c(gene_list)),
+        #Treatment = ifelse(anytreatment == "Treatment", "Post-Treatment", "Untreated"),
+        #Treatment = factor(Treatment, levels = c("Untreated", "Post-Treatment"))
+    ) %>%
+    separate(ChromArmType, into = c("chrom_arm", "type"), sep = "_")
+
+extdata_fig6 <- mocha_treatment_prop %>%
+    filter(!grepl("chrX", chrom_arm)) %>%
+    filter(!is.na(chrom_arm)) %>%
+    mutate(Cohort = factor(Cohort, levels = c("Healthy", "Carboplatin", "PARPi"))) %>%
+    complete(Cohort, chrom_arm, type, fill = list(n = 0, total_patients = 0, Proportion = 0)) %>%
+    mutate(
+        chrom_arm = factor(chrom_arm, levels = c("chr1p", "chr1q", "chr2p", "chr2q", "chr3p", "chr3q", "chr4p", "chr4q", "chr5p", "chr5q", "chr6p", "chr6q", "chr7p", "chr7q", "chr8p", "chr8q", "chr9p", "chr9q", "chr10p", "chr10q", "chr11p", "chr11q", "chr12p", "chr12q", "chr13p", "chr13q", "chr14p", "chr14q", "chr15p", "chr15q", "chr16p", "chr16q", "chr17p", "chr17q", "chr18p", "chr18q", "chr19p", "chr19q", "chr20p", "chr20q", "chr21p", "chr21q", "chr22p", "chr22q"))
+    ) %>%
+    filter(!is.na(chrom_arm)) %>%
+    ggplot(
+        aes(
+            x = chrom_arm,
+            y = Proportion,
+            fill = Cohort
+        )
+    ) +
+    geom_bar(stat = "identity", position = "dodge", color = "black") +
+    labs(
+        x = "Type of mCA",
+        y = "Proportion of Patients with mCA",
+        fill = "Cohort"
+    ) +
+    panel_theme_basic +
+    scale_fill_nejm() +
+    scale_y_continuous(labels = scales::percent_format(), expand = c(0, 0)) +
+    theme(
+        plot.margin = margin(1, 0, 0, 1, "cm"),
+        axis.text.y = element_text(size = 16),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+    ) +
+    facet_wrap(~type, ncol = 1)
+
+extdata_fig6
+pdf(paste0(figures_save_path, "ExtFigure6_mCA_ProportionByCohort.pdf"), width = 12, height = 10)
+extdata_fig6
+dev.off()
+
+# Statistics for the 4 positions
+rbind(
+    glm(
+        data = mut_table_mocha %>%
+            filter(Cohort != "PARPi") %>%
+            mutate(Cohort = factor(Cohort, levels = c("Healthy", "Carboplatin"))),
+        formula = chr13q_Loss ~ Cohort + AGE + Sex_Reported + Ancestry,
+        family = binomial(link = "logit")
+    ) %>% sjPlot::get_model_data(type = "est") %>%
+        filter(grepl("Cohort", term)) %>%
+        mutate(
+            term = "Healthy vs. Carboplatin",
+            chrom_arm_type = "chr13q_loss"
+        ),
+    glm(
+        data = mut_table_mocha %>%
+            filter(Cohort != "PARPi") %>%
+            mutate(Cohort = factor(Cohort, levels = c("Healthy", "Carboplatin"))),
+        formula = `chr13q_Copy Neutral LOH` ~ Cohort + AGE + Sex_Reported + Ancestry,
+        family = binomial(link = "logit")
+    ) %>% sjPlot::get_model_data(type = "est") %>%
+        filter(grepl("Cohort", term)) %>%
+        mutate(
+            term = "Healthy vs. Carboplatin",
+            chrom_arm_type = "chr13q_neutral"
+        ),
+    glm(
+        data = mut_table_mocha %>%
+            filter(Cohort != "Healthy") %>%
+            mutate(Cohort = factor(Cohort, levels = c("Carboplatin", "PARPi"))),
+        formula = `chr14q_Copy Neutral LOH` ~ Cohort + AGE + Sex_Reported + Ancestry,
+        family = binomial(link = "logit")
+    ) %>% sjPlot::get_model_data(type = "est") %>%
+        filter(grepl("Cohort", term)) %>%
+        mutate(
+            term = "Carboplatin vs. PARPi",
+            chrom_arm_type = "chr14q_neutral"
+        ),
+    glm(
+        data = mut_table_mocha %>%
+            filter(Cohort != "Carboplatin") %>%
+            mutate(Cohort = factor(Cohort, levels = c("Healthy", "PARPi"))),
+        formula = chr17p_Loss ~ Cohort + AGE + Sex_Reported + Ancestry,
+        family = binomial(link = "logit")
+    ) %>% sjPlot::get_model_data(type = "est") %>%
+        filter(grepl("Cohort", term)) %>%
+        mutate(
+            term = "Healthy vs. PARPi",
+            chrom_arm_type = "chr17p_loss"
+        )
 )
-supp_fig5b
-ggsave(paste0(figures_save_path, "SuppFigure5B_CD45_Isoforms.png"), supp_fig5b, width = 10, height = 8, units = "in", dpi = 300)
 ```
 
-# Supplementary Figure 6 - Platinum Treatment Expands Tp53 Mutant Cells
-```{r supp_fig6, message = FALSE, warning = FALSE, fig.width=15, fig.height=20}
-supp_fig6a <- make_mouse_cell_plot(
-    mouse_data[["SuppFigure 6"]] %>%
+# Extended Data Figure 7 - Platinum Treatment Expands Tp53 Mutant Cells
+```{r extdata_fig7, message = FALSE, warning = FALSE, fig.width=15, fig.height=20}
+extdata_fig7a <- make_mouse_cell_plot(
+    mouse_data[["ExtDataFigure 7"]] %>%
         mutate(Cohort = factor(Cohort, levels = c("Vehicle", "Cisplatin", "Talazoparib", "Olaparib"))),
     cell_col = "Granulocytes",
-    title = "Granulocytes"
+    title = "Granulocytes",
+    y_label = ""
+    #y_label = expression(atop("%Trp53"^"R172H/+"~"Cells", "(Normalized to 0-week)"))
 )
-supp_fig6a <- add_significance_annotation(supp_fig6a, "***", 13.5, 2.05, 1.08)
-ggsave(paste0(figures_save_path, "SuppFigure6A_Platinum_Treatment_Tp53_Mutant_Cells_Granulocytes.png"), supp_fig6a, width = 10, height = 8, units = "in", dpi = 300)
+extdata_fig7a <- add_significance_annotation(extdata_fig7a, "P<0.0001", 13.5, 2.05, 1.08, size_text = 6)
+pdf(paste0(figures_save_path, "ExtFigure7A_Platinum_Treatment_Tp53_Mutant_Cells_Granulocytes.pdf"), extdata_fig7a, width = 12, height = 8)
+extdata_fig7a
+dev.off()
 
-supp_fig6b <- make_mouse_cell_plot(
-    mouse_data[["SuppFigure 6"]] %>%
+extdata_fig7b <- make_mouse_cell_plot(
+    mouse_data[["ExtDataFigure 7"]] %>%
         mutate(Cohort = factor(Cohort, levels = c("Vehicle", "Cisplatin", "Talazoparib", "Olaparib"))),
     cell_col = "B_Cells",
-    title = "B_Cells"
+    title = "B Cells",
+    y_label = ""
+    #y_label = expression(atop("%Trp53"^"R172H/+"~"Cells", "(Normalized to 0-week)"))
 )
-supp_fig6b <- add_significance_annotation(supp_fig6b, "***", 13.5, 1.89, 1.17)
-ggsave(paste0(figures_save_path, "SuppFigure6B_Platinum_Treatment_Tp53_Mutant_Cells_BCells.png"), supp_fig6b, width = 10, height = 8, units = "in", dpi = 300)
+extdata_fig7b <- add_significance_annotation(extdata_fig7b, "P=0.0006", 13.5, 1.89, 1.17, size_text = 6)
+pdf(paste0(figures_save_path, "ExtFigure7B_Platinum_Treatment_Tp53_Mutant_Cells_BCells.pdf"), extdata_fig7b, width = 12, height = 8)
+extdata_fig7b
+dev.off()
 
-supp_fig6c <- make_mouse_cell_plot(
-    mouse_data[["SuppFigure 6"]] %>%
+extdata_fig7c <- make_mouse_cell_plot(
+    mouse_data[["ExtDataFigure 7"]] %>%
         mutate(Cohort = factor(Cohort, levels = c("Vehicle", "Cisplatin", "Talazoparib", "Olaparib"))),
     cell_col = "Monocytes",
     title = "Monocytes",
+    y_label = "",
+    #y_label = expression(atop("%Trp53"^"R172H/+"~"Cells", "(Normalized to 0-week)")),
     y_limits = c(0, 3.0),
     x_limits = as.character(0:14)
 )
-supp_fig6c <- add_significance_annotation(supp_fig6c, "****", 14, 2.08, 1.17)
-supp_fig6c <- add_significance_annotation(supp_fig6c, "*", 13.5, 1.72, 1.17)
-ggsave(paste0(figures_save_path, "SuppFigure6C_Platinum_Treatment_Tp53_Mutant_Cells_Monocytes.png"), supp_fig6c, width = 10, height = 8, units = "in", dpi = 300)
+extdata_fig7c <- add_significance_annotation(extdata_fig7c, "P<0.0001", 14, 2.08, 1.17, size_text = 6)
+extdata_fig7c <- add_significance_annotation(extdata_fig7c, "P=0.0488", 13.5, 1.72, 1.17, size_text = 6)
+pdf(paste0(figures_save_path, "ExtFigure7C_Platinum_Treatment_Tp53_Mutant_Cells_Monocytes.pdf"), extdata_fig7c, width = 12, height = 8)
+extdata_fig7c
+dev.off()
 
-supp_fig6 <- plot_grid(
+extdata_fig7 <- plot_grid(
   ggdraw() + annotate("text", x = 0.5, y = 0.5, label = "CD45.2 Cells (Normalized to 0-Week)", size = 8, angle = 90),
-  plot_grid(supp_fig6a, supp_fig6b, supp_fig6c, ncol = 1),
+  plot_grid(extdata_fig7a, extdata_fig7b, extdata_fig7c, ncol = 1),
   ncol = 2,
   rel_widths = c(0.5, 10),
   rel_heights = c(1, 1)
 )
-supp_fig6
-ggsave(paste0(figures_save_path, "SuppFigure6_Platinum_Treatment_Tp53_Mutant_Cells.png"), supp_fig6, width = 15, height = 12, units = "in", dpi = 300)
+extdata_fig7
+ggsave(paste0(figures_save_path, "ExtFigure7_Platinum_Treatment_Tp53_Mutant_Cells.png"), extdata_fig7, width = 15, height = 12, units = "in", dpi = 300)
 ```
 
-# Supplementary Figure 7 - TP53-Mutants have Decreased Engraftment
-```{r supp_fig7, message = FALSE, warning = FALSE, fig.width=20, fig.height=15}
-supp_fig7 <- mouse_data[["SuppFigure 7A"]] %>%
+# Extended Data Figure 8 - TP53-Mutants have Decreased Engraftment
+```{r extdata_fig8, message = FALSE, warning = FALSE, fig.width=20, fig.height=15}
+extdata_fig8 <- mouse_data[["ExtDataFigure 8"]] %>%
     group_by(Cohort, Week) %>%
     summarise(mean_value = mean(CD45.2_Cells), sd_value = sd(CD45.2_Cells), sem_value = sd(CD45.2_Cells, na.rm = TRUE)/sqrt(n())) %>%
     ggplot(
@@ -1880,76 +3052,916 @@ supp_fig7 <- mouse_data[["SuppFigure 7A"]] %>%
     ) +
     ylim(NA, 50) +
     scale_x_discrete(limits = as.character(0:17), expand = c(0, 0.5), breaks = c(0, 4, 8, 12, 16))
-supp_fig7
-ggsave(paste0(figures_save_path, "SuppFigure7_TP53_Mutants_Decreased_Engraftment.png"), supp_fig7, width = 8, height = 6, units = "in", dpi = 300)
+extdata_fig8
+pdf(paste0(figures_save_path, "ExtFigure8_TP53_Mutants_Decreased_Engraftment.pdf"), extdata_fig8, width = 8, height = 6)
+extdata_fig8
+dev.off()
 ```
 
-# Supplementary Figure 8 - Mutant TP53 Cells fail to expand
-```{r supp_fig, message = FALSE, warning = FALSE, fig.width=15, fig.height=20}
-supp_fig8a <- make_mouse_cell_plot(
-    mouse_data[["SuppFigure 8"]] %>%
+# Extended Data Figure 9 - Mutant TP53 Cells fail to expand
+```{r extdata_fig9, message = FALSE, warning = FALSE, fig.width=15, fig.height=20}
+extdata_fig9a <- make_mouse_cell_plot(
+    mouse_data[["ExtDataFigure 9"]] %>%
         mutate(
             Cohort = case_when(
-                Cohort == "BRCA1 Vehicle" ~ "BRCA1 fl/+ Vehicle",
-                Cohort == "BRCA1 Cisplatin" ~ "BRCA1 fl/+ Cisplatin",
-                Cohort == "BRCA1 Talazoparib" ~ "BRCA1 fl/+ Talazoparib"
+                Cohort == "BRCA1 Vehicle" ~ "Brca1 fl/+ Vehicle",
+                Cohort == "BRCA1 Cisplatin" ~ "Brca1 fl/+ Cisplatin",
+                Cohort == "BRCA1 Talazoparib" ~ "Brca1 fl/+ Talazoparib"
             ),
-            Cohort = factor(Cohort, levels = c("BRCA1 fl/+ Vehicle", "BRCA1 fl/+ Cisplatin", "BRCA1 fl/+ Talazoparib"))
+            Cohort = factor(Cohort, levels = c("Brca1 fl/+ Vehicle", "Brca1 fl/+ Cisplatin", "Brca1 fl/+ Talazoparib"))
         ),
     cell_col = "Granulocytes",
     title = "Granulocytes"
 )
-ggsave(paste0(figures_save_path, "SuppFigure8A_Granulocytes.png"), supp_fig8a, width = 12, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "ExtFigure9A_Granulocytes.pdf"), width = 12, height = 8)
+extdata_fig9a
+dev.off()
 
-supp_fig8b <- make_mouse_cell_plot(
-    mouse_data[["SuppFigure 8"]] %>%
+extdata_fig9b <- make_mouse_cell_plot(
+    mouse_data[["ExtDataFigure 9"]] %>%
         mutate(
             Cohort = case_when(
-                Cohort == "BRCA1 Vehicle" ~ "BRCA1 fl/+ Vehicle",
-                Cohort == "BRCA1 Cisplatin" ~ "BRCA1 fl/+ Cisplatin",
-                Cohort == "BRCA1 Talazoparib" ~ "BRCA1 fl/+ Talazoparib"
+                Cohort == "BRCA1 Vehicle" ~ "Brca1 fl/+ Vehicle",
+                Cohort == "BRCA1 Cisplatin" ~ "Brca1 fl/+ Cisplatin",
+                Cohort == "BRCA1 Talazoparib" ~ "Brca1 fl/+ Talazoparib"
             ),
-            Cohort = factor(Cohort, levels = c("BRCA1 fl/+ Vehicle", "BRCA1 fl/+ Cisplatin", "BRCA1 fl/+ Talazoparib"))
+            Cohort = factor(Cohort, levels = c("Brca1 fl/+ Vehicle", "Brca1 fl/+ Cisplatin", "Brca1 fl/+ Talazoparib"))
         ),
     cell_col = "B_Cells",
     title = "B Cells"
 )
-ggsave(paste0(figures_save_path, "SuppFigure8B_BCells.png"), supp_fig8b, width = 12, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "ExtFigure9B_BCells.pdf"), width = 12, height = 8)
+extdata_fig9b
+dev.off()
 
-supp_fig8c <- make_mouse_cell_plot(
-    mouse_data[["SuppFigure 8"]] %>%
+extdata_fig9c <- make_mouse_cell_plot(
+    mouse_data[["ExtDataFigure 9"]] %>%
         mutate(
             Cohort = case_when(
-                Cohort == "BRCA1 Vehicle" ~ "BRCA1 fl/+ Vehicle",
-                Cohort == "BRCA1 Cisplatin" ~ "BRCA1 fl/+ Cisplatin",
-                Cohort == "BRCA1 Talazoparib" ~ "BRCA1 fl/+ Talazoparib"
+                Cohort == "BRCA1 Vehicle" ~ "Brca1 fl/+ Vehicle",
+                Cohort == "BRCA1 Cisplatin" ~ "Brca1 fl/+ Cisplatin",
+                Cohort == "BRCA1 Talazoparib" ~ "Brca1 fl/+ Talazoparib"
             ),
-            Cohort = factor(Cohort, levels = c("BRCA1 fl/+ Vehicle", "BRCA1 fl/+ Cisplatin", "BRCA1 fl/+ Talazoparib"))
+            Cohort = factor(Cohort, levels = c("Brca1 fl/+ Vehicle", "Brca1 fl/+ Cisplatin", "Brca1 fl/+ Talazoparib"))
         ),
     cell_col = "Monocytes",
     title = "Monocytes",
     y_limits = c(0, 8.5)
 )
-ggsave(paste0(figures_save_path, "SuppFigure8C_Monocytes.png"), supp_fig8c, width = 12, height = 8, units = "in", dpi = 300)
+pdf(paste0(figures_save_path, "ExtFigure9C_Monocytes.pdf"), width = 12, height = 8)
+extdata_fig9c
+dev.off()
 ```
 
-# Supplementary Figure 9 - No Rescue
-```{r supp_fig9, message = FALSE, warning = FALSE, fig.width=15, fig.height=20}
+# Extended Data Figure 10 - Anemia Response to Talazoparib
+```{r extdata_fig10, message = FALSE, warning = FALSE, fig.width=15, fig.height=20}
+df_to_plot <- mouse_data[["ExtDataFigure 10a"]] %>%
+    mutate(
+        BloodCount = str_squish(BloodCount),               # remove double spaces
+        BloodCount = factor(BloodCount, levels = c("WBC (K/uL)", "RBC (M/uL)", "Hb (g/dL)")),
+        Drug = stringr::str_remove(Treatment, "^(WT\\s+|Brca fl/\\+\\s+)"),
+        Treatment = str_squish(Treatment),               # remove double spaces
+        Treatment = factor(Treatment, levels = c("WT Vehicle", "WT Cisplatin", "WT Talazoparib", "Brca fl/+ Vehicle", "Brca fl/+ Cisplatin", "Brca fl/+ Talazoparib"))
+    )
+
+df_summary <- df_to_plot %>%
+    group_by(BloodCount, Treatment) %>%
+    summarise(
+        mean = mean(Value, na.rm = TRUE),
+    se = sd(Value, na.rm = TRUE)/sqrt(n()),
+    .groups = "drop"
+  )
+
+extdata_fig10a <- ggplot() +
+    geom_hline(yintercept = 11, linetype = "dotted") +  # Hb low
+    geom_hline(yintercept = 7, linetype = "dotted") +   # RBC low
+    geom_bar(data = df_summary, aes(x = BloodCount, y = mean, fill = Treatment), stat = "identity", position = position_dodge(width = 0.7), width = 0.7, color = "black") +
+    geom_errorbar(data = df_summary, aes(x = BloodCount, ymin = mean - se, ymax = mean + se, group = Treatment), position = position_dodge(width = 0.7), width = 0.2) +
+    geom_point(data = df_to_plot, aes(x = BloodCount, y = Value, shape = Treatment), position = position_jitterdodge(jitter.width=0.15, dodge.width=0.7), size = 2, color = "black") +
+    labs(
+        x = "",
+        y = "",
+        fill = "Cohort",
+        shape = "Cohort",
+    ) +
+    panel_theme_basic +
+    scale_shape_manual(values = c(15, 16, 17, 0, 1, 2)) +
+    scale_fill_manual(values = c("WT Vehicle" = "#BC3C29FF", "WT Cisplatin" = "#0072B2FF", "WT Talazoparib" = "#E18727FF", "Brca fl/+ Vehicle" = "#BC3C29FF", "Brca fl/+ Cisplatin" = "#0072B2FF", "Brca fl/+ Talazoparib" = "#E18727FF")) +
+    theme(
+        legend.position = "right",
+        legend.direction = "vertical",
+        plot.margin = margin(1, 1, 0, 0, "cm")
+    ) +
+    ylim(0, 30) +
+    # WBC
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 0.95, xmax = 1.32, annotations = "P=0.0052", tip_length = 0.02, y_position = 20, textsize = 6, size = 1) +
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 1.05, xmax = 1.17, annotations = "P=0.0004", tip_length = 0.02, y_position = 18, textsize = 6, size = 1) +
+    # RBC
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 2.17, xmax = 2.32, annotations = "P<0.0001", tip_length = 0.02, y_position = 11, textsize = 6, size = 1) +
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 2.07, xmax = 2.32, annotations = "P<0.0001", tip_length = 0.02, y_position = 13, textsize = 6, size = 1) +
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 1.95, xmax = 2.32, annotations = "P<0.0001", tip_length = 0.02, y_position = 15, textsize = 6, size = 1) +
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 1.75, xmax = 2.32, annotations = "P<0.0001", tip_length = 0.02, y_position = 17, textsize = 6, size = 1) +
+    # Hb
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 3.17, xmax = 3.32, annotations = "P<0.0001", tip_length = 0.02, y_position = 13, textsize = 6, size = 1) +
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 3.05, xmax = 3.17, annotations = "P=0.0092", tip_length = 0.02, y_position = 17, textsize = 6, size = 1) +
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 3.05, xmax = 3.32, annotations = "P<0.0001", tip_length = 0.02, y_position = 19, textsize = 6, size = 1) +
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 2.95, xmax = 3.32, annotations = "P<0.0001", tip_length = 0.02, y_position = 21, textsize = 6, size = 1) +
+    geom_signif(data = df_to_plot, aes(x = BloodCount, y = Value, group = Treatment), xmin = 2.75, xmax = 3.32, annotations = "P<0.0001", tip_length = 0.02, y_position = 23, textsize = 6, size = 1)
+extdata_fig10a
+pdf(paste0(figures_save_path, "ExtFigure10A_Anemia_Response_Talazoparib.pdf"), width = 14, height = 8)
+extdata_fig10a
+dev.off()
+
+fit <- survfit(
+    Surv(Days, Status) ~ Cohort, 
+    data = mouse_data[["ExtDataFigure 10b"]] %>%
+    mutate(
+        Cohort = str_squish(Cohort),
+        Cohort = case_when(
+            Cohort == "WT:R172H Vehicle" ~ "WT Vehicle",
+            Cohort == "WT:R172H Cisplatin" ~ "WT Cisplatin",
+            Cohort == "WT:R172H Talazoparib" ~ "WT Talazoparib",
+            Cohort == "BRCA1:R172H Vehicle" ~ "Brca fl/+ Vehicle",
+            Cohort == "BRCA1:R172H Cisplatin" ~ "Brca fl/+ Cisplatin",
+            Cohort == "BRCA1:R172H Talazoparib" ~ "Brca fl/+ Talazoparib",
+        ),
+        Cohort = factor(Cohort, levels = c("WT Vehicle", "WT Cisplatin", "WT Talazoparib", "Brca fl/+ Vehicle", "Brca fl/+ Cisplatin", "Brca fl/+ Talazoparib"))
+    )
+  )
+
+cohort_levels <- c(
+  "WT Vehicle", "WT Cisplatin", "WT Talazoparib",
+  "Brca fl/+ Vehicle", "Brca fl/+ Cisplatin", "Brca fl/+ Talazoparib"
+)
+cohort_colors <- c("#BC3C29FF", "#0072B2FF", "#E18727FF", "#BC3C29FF", "#0072B2FF", "#E18727FF")
+cohort_linetypes <- c("solid", "solid", "solid", "dashed", "dashed", "dashed")
+extdata_fig10b <- ggsurvplot(
+    fit,
+    linetype = cohort_linetypes,
+    palette = cohort_colors,
+    legend = "right",
+    legend.title = "Cohort",
+    legend.labs = c(
+        "WT Vehicle", "WT Cisplatin", "WT Talazoparib",
+        "Brca fl/+ Vehicle", "Brca fl/+ Cisplatin", "Brca fl/+ Talazoparib"
+    ),
+    xlab = "Days (post-transplant)",
+    ylab = "Overall Survival Probability",
+    title = ""
+)
+extdata_fig10b <- extdata_fig10b$plot + 
+    annotate(geom = "rect", xmin = 44, xmax = 72, ymin = 0, ymax = 0.05, fill = "black") +
+    geom_text(data = data.frame(x = 58, y = 0.1, label = "Treatment"), aes(x = x, y = y, label = label), color = "black", size = 8) +
+    annotate("text", x = 150 - 5, y = 0.76/2.05, label = "P=0.0012", size = 6) +
+    annotate("segment", x = 150, xend = 150, y = 0.32, yend = 0.44, size = 1) +
+    annotate("segment", x = 150, xend = 160, y = 0.32, yend = 0.32, size = 1) +
+    annotate("segment", x = 150, xend = 160, y = 0.44, yend = 0.44, size = 1) +
+    panel_theme_basic + 
+    theme(
+        legend.position = "right",
+        legend.direction = "vertical",
+        plot.margin = margin(1, 1, 1, 1, "cm")
+    ) +
+    guides(
+      colour = guide_legend(keywidth = unit(2.2, "cm"), override.aes = list(size = 1.5, linetype = cohort_linetypes)),
+      linetype = guide_legend(keywidth = unit(2.2, "cm"), override.aes = list(size = 1.5, linetype = cohort_linetypes))
+    ) +
+    theme(
+      legend.key.width = unit(2.2, "cm"),
+      legend.key.height = unit(0.6, "cm")
+    )
+extdata_fig10b
+pdf(paste0(figures_save_path, "ExtFigure10B_Anemia_Response_Talazoparib_Survival.pdf"), width = 14, height = 8)
+extdata_fig10b
+dev.off()
+```
+
+# Supp Figure 1A and B - Statistics
+```{r suppfig_fig1ab_stats, message = FALSE, warning = FALSE}
+model_list_tp53 <- list(
+    "TP53 CH Unadjusted" = TP53_CH ~ ind_parp_inhibitor + ind_cytotoxic_therapy + ind_radiotherapy + XRT + ind_immune_therapy + ind_non_parp_targeted_therapy + age + smoke_bin + race_b + timedx_impact,
+    "TP53 CH Adjusted for Cytotoxic Therapy" = TP53_CH ~ ind_parp_inhibitor + ind_platinum + ind_topoisomerase_ii_inh + ind_microtubule_damaging + ind_topoisomerase_i_inhi + ind_taxane + ind_antimetabolite + ind_alkylating_agent + ind_radiotherapy + ind_targeted_therapy + XRT + ind_immune_therapy + ind_non_parp_targeted_therapy + age + smoke_bin + race_b + timedx_impact,
+    "TP53 CH Adjusted for Amount of Cytotoxic Therapy" = TP53_CH ~ pct_parp_inhibitor + 
+      pct_carboplatin + pct_cisplatin + pct_oxaliplatin + pct_anthracycline + pct_epipodophyllotoxins + pct_cytotoxic_therapy_ot + pct_topoisomerase_i_inhi + pct_topoisomerase_ii_inh + 
+      pct_microtubule_damaging +  pct_taxane + pct_antimetabolite + pct_alkylating_agent + pct_radiotherapy + pct_targeted_therapy + pct_immune_therapy + 
+      eqd_10_t + age + smoke_bin + race_b + timedx_impact
+)
+
+model_list_ppm1d <- list(
+    "PPM1D CH Unadjusted" = PPM1D_CH ~ ind_parp_inhibitor + ind_cytotoxic_therapy + ind_radiotherapy + XRT + ind_immune_therapy + ind_non_parp_targeted_therapy + age + smoke_bin + race_b + timedx_impact,
+    "PPM1D CH Adjusted for Cytotoxic Therapy" = PPM1D_CH ~ ind_parp_inhibitor + ind_platinum + ind_topoisomerase_ii_inh + ind_microtubule_damaging + ind_topoisomerase_i_inhi + ind_taxane + ind_antimetabolite + ind_alkylating_agent + ind_radiotherapy + ind_targeted_therapy + XRT + ind_immune_therapy + ind_non_parp_targeted_therapy + age + smoke_bin + race_b + timedx_impact,
+    "PPM1D CH Adjusted for Amount of Cytotoxic Therapy" = PPM1D_CH ~ pct_parp_inhibitor + 
+      pct_carboplatin + pct_cisplatin + pct_oxaliplatin + pct_anthracycline + pct_epipodophyllotoxins + pct_cytotoxic_therapy_ot + pct_topoisomerase_i_inhi + pct_topoisomerase_ii_inh + 
+      pct_microtubule_damaging +  pct_taxane + pct_antimetabolite + pct_alkylating_agent + pct_radiotherapy + pct_targeted_therapy + pct_immune_therapy + 
+      eqd_10_t + age + smoke_bin + race_b + timedx_impact
+)
+
+model_list_chek2 <- list(
+    "CHEK2 CH Unadjusted" = CHEK2_CH ~ ind_parp_inhibitor + ind_cytotoxic_therapy + ind_radiotherapy + XRT + ind_immune_therapy + ind_non_parp_targeted_therapy + age + smoke_bin + race_b + timedx_impact,
+    "CHEK2 CH Adjusted for Cytotoxic Therapy" = CHEK2_CH ~ ind_parp_inhibitor + ind_platinum + ind_topoisomerase_ii_inh + ind_microtubule_damaging + ind_topoisomerase_i_inhi + ind_taxane + ind_antimetabolite + ind_alkylating_agent + ind_radiotherapy + ind_targeted_therapy + XRT + ind_immune_therapy + ind_non_parp_targeted_therapy + age + smoke_bin + race_b + timedx_impact,
+    "CHEK2 CH Adjusted for Amount of Cytotoxic Therapy" = CHEK2_CH ~ pct_parp_inhibitor + 
+      pct_carboplatin + pct_cisplatin + pct_oxaliplatin + pct_anthracycline + pct_epipodophyllotoxins + pct_cytotoxic_therapy_ot + pct_topoisomerase_i_inhi + pct_topoisomerase_ii_inh + 
+      pct_microtubule_damaging +  pct_taxane + pct_antimetabolite + pct_alkylating_agent + pct_radiotherapy + pct_targeted_therapy + pct_immune_therapy + 
+      eqd_10_t + age + smoke_bin + race_b + timedx_impact
+)
+
+msk_models_ch <- map(c(model_list_tp53, model_list_ppm1d, model_list_chek2), function(formula){
+    glm(
+        formula = formula,
+        family = binomial(link = "logit"),
+        data = msk_df
+    ) %>%
+    sjPlot::get_model_data(type = "est")
+})
+```
+
+# Supp Figure 1A - Logistic Regression Analysis of Therapy on DDR CH Mutations
+```{r suppfig_fig1a, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+supp_fig1a <- rbind(
+    msk_models$Unadjusted %>% mutate(Classification = "DDR CH"),
+    msk_models_ch$`TP53 CH Unadjusted` %>% mutate(Classification = "TP53 CH"),
+    msk_models_ch$`PPM1D CH Unadjusted` %>% mutate(Classification = "PPM1D CH")#,
+    #msk_models_ch$`CHEK2 CH Unadjusted` %>% mutate(Classification = "CHEK2 CH")    # There are too few
+) %>%
+    filter(str_detect(term, "ind_|XRT")) %>%
+    mutate(
+        term = case_when(
+            term == "ind_parp_inhibitor" ~ "PARP Inhibitor",
+            term == "ind_cytotoxic_therapy" ~ "Cytotoxic Therapy",
+            term == "ind_radiotherapy" ~ "Radionucleotide Therapy",
+            term == "XRT" ~ "External Beam Radiation",
+            term == "ind_immune_therapy" ~ "Immune Therapy",
+            term == "ind_non_parp_targeted_therapy" ~ "Other Targeted Therapy",
+            TRUE ~ term
+        ),
+        term = factor(term, levels = c("Other Targeted Therapy",
+                                    "Immune Therapy",
+                                    "External Beam Radiation",
+                                    "Radionucleotide Therapy",
+                                    "Cytotoxic Therapy",
+                                    "PARP Inhibitor")),
+        Classification = factor(Classification, levels = c("DDR CH", "TP53 CH", "PPM1D CH", "CHEK2 CH")),
+        p.label = ifelse(p.stars != "", format(p.value, digits = 2), "")
+    ) %>%
+    select(term, Classification, estimate, std.error, conf.low, conf.high, p.value, p.stars, p.label) %>%
+    filter(!(term == "Radionucleotide Therapy" & Classification == "TP53 CH")) %>% # Remove Radionucleotide Therapy for TP53 CH because the confidence interval is too wide to be visualized on the same plot
+    ggplot(
+        aes(
+            x = term,
+            y = estimate,
+            ymin = conf.low,
+            ymax = conf.high,
+            col = Classification,
+            fill = Classification
+        )
+    ) +
+    geom_point(position = position_dodge(width = 0.7), size = 5) +
+    geom_errorbar(position = position_dodge(width = 0.7), width = 0.4, linewidth = 1) +
+    #geom_text(aes_string(label = "p.stars", vjust = 0.1), size = 8, position = position_dodge(width = 0.7), color = "black") +
+    geom_text(aes(label = p.label, vjust = -0.8), size = 4, position = position_dodge(width = 0.7), color = "black") +
+    geom_hline(yintercept = 1, color = "black", linetype = "solid") +
+    coord_flip() +
+    scale_color_nejm() +
+    scale_y_log10(breaks = c(0.1, 0.2, 0.3, 0.5, 1, 2, 3, 5, 10)) +
+    #scale_y_log10(limits = c(NA, NA), breaks = c(1, 2, 3, 5, 10), labels = scales::label_number(accuracy = 1L)) +
+    labs(
+        y = "Odds Ratio of DDR CH",
+        x = "",
+        title = "",
+        color = "Gene",
+        fill = "Gene"
+    ) +
+    panel_theme_basic +
+    theme(
+        panel.grid.major.x = element_line(color = alpha("grey", 0.8), size = 0.5, linetype = "solid"),
+        axis.text.x = ggtext::element_markdown(size = 18),
+        axis.text.y = element_text(size = 18)
+    )
+supp_fig1a
+```
+
+# Supp Figure 1B - Logistic Regression Analysis of PARP Inhibitor on DDR CH Mutations Adjusted
+```{r suppfig_fig1b, message = FALSE, warning = FALSE, fig.width=16, fig.height=6}
+supp_fig1b <- rbind(
+    msk_models$`Adjusted for Cytotoxic Therapy` %>% filter(term == "ind_parp_inhibitor") %>% mutate(Classification = "DDR CH"),
+    msk_models_ch$`TP53 CH Adjusted for Cytotoxic Therapy` %>% filter(term == "ind_parp_inhibitor") %>% mutate(Classification = "TP53 CH"),
+    msk_models_ch$`PPM1D CH Adjusted for Cytotoxic Therapy` %>% filter(term == "ind_parp_inhibitor") %>% mutate(Classification = "PPM1D CH"),
+    #msk_models_ch$`CHEK2 CH Adjusted for Cytotoxic Therapy` %>% filter(term == "ind_parp_inhibitor") %>% mutate(Classification = "CHEK2 CH"),
+    msk_models$`Adjusted for Amount of Cytotoxic Therapy` %>% filter(term == "pct_parp_inhibitor") %>% mutate(Classification = "DDR CH"),
+    msk_models_ch$`TP53 CH Adjusted for Amount of Cytotoxic Therapy` %>% filter(term == "pct_parp_inhibitor") %>% mutate(Classification = "TP53 CH"),
+    msk_models_ch$`PPM1D CH Adjusted for Amount of Cytotoxic Therapy` %>% filter(term == "pct_parp_inhibitor") %>% mutate(Classification = "PPM1D CH")#,
+    #msk_models_ch$`CHEK2 CH Adjusted for Amount of Cytotoxic Therapy` %>% filter(term == "pct_parp_inhibitor") %>% mutate(Classification = "CHEK2 CH")
+) %>%
+    mutate(
+        term = case_when(
+            term == "ind_parp_inhibitor" ~ "PARP Inhibitor\n(Adjusted for\nCytotoxic Therapy Class)",
+            term == "pct_parp_inhibitor" ~ "PARP Inhibitor\n(Adjusted for\nAmount of Cytotoxic\nTherapy Recieved)"
+        ),
+        term = factor(term, levels = c("PARP Inhibitor\n(Adjusted for\nAmount of Cytotoxic\nTherapy Recieved)", "PARP Inhibitor\n(Adjusted for\nCytotoxic Therapy Class)")),
+        Classification = factor(Classification, levels = c("DDR CH", "TP53 CH", "PPM1D CH", "CHEK2 CH")),
+        p.label = ifelse(p.stars != "", format(p.value, digits = 2), ""),
+    ) %>%
+    select(term, Classification, estimate, std.error, conf.low, conf.high, p.value, p.stars, p.label) %>%
+    ggplot(
+        aes(
+            x = term,
+            y = estimate,
+            ymin = conf.low,
+            ymax = conf.high,
+            col = Classification,
+            fill = Classification
+        )
+    ) +
+    geom_point(position = position_dodge(width = 0.5), size = 5) +
+    geom_errorbar(position = position_dodge(width = 0.5), width = 0.2, linewidth = 1) +
+    #geom_text(aes_string(label = "p.stars", vjust = 0.1), size = 8, position = position_dodge(width = 0.5), color = "black") +
+    geom_text(aes(label = p.label, vjust = -0.8), size = 4, position = position_dodge(width = 0.5), color = "black") +
+    geom_hline(yintercept = 1, color = "black", linetype = "solid") +
+    coord_flip() +
+    scale_color_nejm() +
+    #scale_color_manual(values = c("#316675", "#587a8a", "#8badbd")) +
+    scale_y_log10(breaks = c(0.1, 0.2, 0.3, 0.5, 1, 2, 3, 5, 10)) +
+    labs(
+        y = "Odds Ratio of DDR CH",
+        x = "",
+        title = "",
+        color = "Gene",
+        fill = "Gene"
+    ) +
+    panel_theme_basic +
+    theme(
+        panel.grid.major.x = element_line(color = alpha("grey", 0.8), size = 0.5, linetype = "solid")
+        #axis.text.x = ggtext::element_markdown(size = 17)
+    )
+supp_fig1b
+
+supp_fig1 <- plot_grid(
+    supp_fig1a,
+    supp_fig1b,
+    ncol = 2,
+    align = "h",
+    labels = c("a", "b"),
+    label_size = 20
+)
+ggsave(paste0(figures_save_path, "SuppFigure1_Therapy_DDR_CH.png"), supp_fig1, width = 20, height = 10, units = "in", dpi = 300)
+```
+
+# Supp Figure 2 - Proportion of Patients and Drugs Prior to Study
+```{r suppfig2_prior_drugs, message = FALSE, warning = FALSE}
+# For each patient, find the earliest date for the specific drug regimen they were on
+# This contains for each patient, the start of their drug regimen for our analysis
+deid_earliest_regimen_date <- drug_info %>%
+    filter(!(DEID %in% c(Not_Paired_DEID, Samples_Less_Than_30_Days_Apart))) %>%
+    filter(druggeneric == Drug) %>%
+    group_by(DEID, druggeneric, drugclass_c, Cohort, Drug) %>%
+    summarise(earliest_regimen_date = min(APR_START_DTE, na.rm = TRUE), .groups = "drop")
+
+# Treatment-naive in our definition is for patients who we have their sample at a specific regimen
+# for example, carboplatin or PARPi, we want to see if they had any other "regimens" prior to their
+# current regimen. So for example, if they are in the carboplatin cohort, we want to see if they 
+# had any other drugs that were started prior to the start of their carboplatin regimen.
+prior_drugs_df <- drug_info %>%
+    filter(!(DEID %in% c(Not_Paired_DEID, Samples_Less_Than_30_Days_Apart))) %>%
+    # We will also remove "oral" drugs that were only taken for a day since these are likely issues with data entry
+    filter(!(grepl("oral", APR_ROUTE) & APR_DURATION == 1)) %>%
+    # Now we need to find the oldest occurrence of a specific drug
+    group_by(DEID, druggeneric, drugclass_c, Cohort) %>%
+    summarise(earliest_drug_date = min(APR_START_DTE, na.rm = TRUE)) %>%
+    left_join(
+        deid_earliest_regimen_date %>%
+            select(DEID, Cohort, earliest_regimen_date),
+        by = c("DEID", "Cohort")
+    ) %>%
+    # These are all the drugs that were received prior to the earliest sample collection date, so we can be assured that they were received before the sample was collected
+    filter(
+        earliest_drug_date < (earliest_regimen_date)
+    ) %>%
+    mutate(
+        drugclass = case_when(
+            drugclass_c == "targeted_therapy_parp" ~ "PARP Inhibitor",
+            drugclass_c == "cytotoxic_therapy" ~ "Cytotoxic Therapy",
+            drugclass_c == "cytotoxic_therapy_platinum" ~ "Platinum Therapy",
+            drugclass_c == "radionuclide" ~ "Radionuclide",
+            drugclass_c == "radiation_therapy" ~ "Radiation Therapy",
+            drugclass_c == "immune_therapy" ~ "Immune Therapy",
+            #drugclass_c == "biologic_therapy" ~ "Biologic Therapy",
+            #drugclass_c == "hormonal_therapy" ~ "Hormonal Therapy",
+            #drugclass_c == "protein_kinase_inhibitor" ~ "Protein Kinase Inhibitor",
+            #drugclass_c == "targeted_therapy" ~ "Targeted Therapy",
+            TRUE ~ "Other Targeted Therapy"
+        )
+    ) %>%
+    # This oral entry overlaps between Olaparib and Niraparib, so we will remove it since it is likely a data entry error
+    filter(!(drugclass == "PARP Inhibitor" & Cohort == "PARPi" & DEID == "1567490"))
+
+# Dtermine how many patients in our dataset received each major drug class
+prior_drugs_prop <- prior_drugs_df %>%
+    group_by(Cohort, drugclass) %>%
+    summarise(
+        n_patients = n_distinct(DEID),
+        .groups = "drop"
+    ) %>%
+    complete(Cohort, drugclass, fill = list(n_patients = 0)) %>%
+    left_join(
+        # Get total patients per cohort
+        drug_info %>%
+            group_by(Cohort) %>%
+            summarise(total_patients = n_distinct(DEID), .groups = "drop"),
+        by = "Cohort"
+    ) %>%
+    mutate(
+        proportion = n_patients / total_patients,
+        percentage = round(proportion * 100, 1)
+    ) %>%
+    arrange(Cohort, desc(percentage))
+
+supp_fig2 <- prior_drugs_prop %>% 
+  ggplot(
+        aes(
+            x = drugclass,
+            y = percentage,
+            fill = Cohort
+        )
+    ) +
+    geom_bar(color = "black", stat = "identity", position = position_dodge()) +
+    labs(
+        x = "",
+        y = "Percentage of Patients with Prior Exposure",
+        fill = "Cohort"
+    ) +
+    panel_theme_basic +
+    scale_fill_nejm() +
+    theme(
+        legend.position = c(0.8, 0.7),
+        legend.direction = "vertical",
+        plot.margin = margin(1, 0, 0, 1, "cm"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 18)
+    ) +
+    scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100), expand = c(0, 0), breaks = seq(0, 100, 10))
+supp_fig2
+ggsave(paste0(figures_save_path, "SuppFigure2_PriorDrugs.png"), supp_fig2, width = 10, height = 8, units = "in", dpi = 300)
+```
+
+# Supp Figure 3 - Carbo before PARP and PARP
+```{r supp_fig3, message = FALSE, warning = FALSE}
+carbo_then_parp <- drug_info %>%
+    filter(original_data == TRUE) %>%
+    filter(!(DEID %in% c(Not_Paired_DEID, Samples_Less_Than_30_Days_Apart))) %>%
+    # We will also remove "oral" drugs that were only taken for a day since these are likely issues with data entry
+    filter(!(grepl("oral", APR_ROUTE) & APR_DURATION == 1)) %>%
+    # Now we need to find the oldest occurrence of a specific drug
+    group_by(DEID, druggeneric, drugclass_c, Cohort) %>%
+    summarise(earliest_drug_date = min(APR_START_DTE, na.rm = TRUE)) %>%
+    left_join(
+        deid_earliest_regimen_date %>%
+            select(DEID, Cohort, earliest_regimen_date),
+        by = c("DEID", "Cohort")
+    ) %>%
+    # These are all the drugs that were received prior to the earliest sample collection date, so we can be assured that they were received before the sample was collected
+    filter(
+        earliest_drug_date < (earliest_regimen_date)
+    ) %>%
+    mutate(
+        drugclass = case_when(
+            drugclass_c == "targeted_therapy_parp" ~ "PARP Inhibitor",
+            drugclass_c == "cytotoxic_therapy" ~ "Cytotoxic Therapy",
+            drugclass_c == "cytotoxic_therapy_platinum" ~ "Platinum Therapy",
+            drugclass_c == "radionuclide" ~ "Radionuclide",
+            drugclass_c == "radiation_therapy" ~ "Radiation Therapy",
+            drugclass_c == "immune_therapy" ~ "Immune Therapy",
+            TRUE ~ "Other Targeted Therapy"
+        )
+    ) %>%
+    # This oral entry overlaps between Olaparib and Niraparib, so we will remove it since it is likely a data entry error
+    filter(!(drugclass == "PARP Inhibitor" & Cohort == "PARPi" & DEID == "1567490")) %>%
+    filter(Cohort == "PARPi", drugclass == "Platinum Therapy") %>%
+    ungroup() %>%
+    distinct(DEID) %>%
+    pull(DEID)
+
+carbo_then_carbo <- drug_info %>%
+    filter(original_data == TRUE) %>%
+    filter(!(DEID %in% c(Not_Paired_DEID, Samples_Less_Than_30_Days_Apart))) %>%
+    # We will also remove "oral" drugs that were only taken for a day since these are likely issues with data entry
+    filter(!(grepl("oral", APR_ROUTE) & APR_DURATION == 1)) %>%
+    # Now we need to find the oldest occurrence of a specific drug
+    group_by(DEID, druggeneric, drugclass_c, Cohort) %>%
+    summarise(earliest_drug_date = min(APR_START_DTE, na.rm = TRUE)) %>%
+    left_join(
+        deid_earliest_regimen_date %>%
+            select(DEID, Cohort, earliest_regimen_date),
+        by = c("DEID", "Cohort")
+    ) %>%
+    # These are all the drugs that were received prior to the earliest sample collection date, so we can be assured that they were received before the sample was collected
+    filter(
+        earliest_drug_date < (earliest_regimen_date)
+    ) %>%
+    mutate(
+        drugclass = case_when(
+            drugclass_c == "targeted_therapy_parp" ~ "PARP Inhibitor",
+            drugclass_c == "cytotoxic_therapy" ~ "Cytotoxic Therapy",
+            drugclass_c == "cytotoxic_therapy_platinum" ~ "Platinum Therapy",
+            drugclass_c == "radionuclide" ~ "Radionuclide",
+            drugclass_c == "radiation_therapy" ~ "Radiation Therapy",
+            drugclass_c == "immune_therapy" ~ "Immune Therapy",
+            TRUE ~ "Other Targeted Therapy"
+        )
+    ) %>%
+    # This oral entry overlaps between Olaparib and Niraparib, so we will remove it since it is likely a data entry error
+    filter(!(drugclass == "PARP Inhibitor" & Cohort == "PARPi" & DEID == "1567490")) %>%
+    filter(Cohort == "Carboplatin", drugclass == "Platinum Therapy") %>%
+    ungroup() %>%
+    distinct(DEID) %>%
+    pull(DEID)
+
+carbo_then_parp_tp <- rbind(
+    timepoints %>%
+        filter(DeID %in% carbo_then_parp),
+    timepoints %>%
+        filter(DeID %in% c("1536848", "1734282", "1755649", "1592606", "1620504")) %>%
+        filter(Cohort == "PARPi")
+) %>%
+    mutate(
+        multiple_drug_classification = "Received Carboplatin"
+    ) %>%
+    filter(Gene_Class == "DDR")
+
+df_to_plot <- timepoints %>%
+    filter(!(DeID %in% carbo_then_parp_tp$DeID)) %>%
+    filter(Cohort == "PARPi") %>%
+    mutate(
+        multiple_drug_classification = "No Prior Carboplatin"
+    ) %>%
+    rbind(carbo_then_parp_tp) %>%
+    rbind(
+        timepoints %>%
+            filter(!(DeID %in% carbo_then_parp_tp$DeID)) %>%
+            filter(Cohort == "Carboplatin") %>%
+            mutate(
+                multiple_drug_classification = "Carboplatin"
+            )
+    ) %>%
+    filter(growth_rate != Inf & growth_rate != -Inf) %>%
+    filter(Gene_Class == "DDR") %>%
+    mutate(
+        multiple_drug_classification = factor(multiple_drug_classification, levels = c("Carboplatin", "No Prior Carboplatin", "Received Carboplatin"))
+    )
+
+model_ddr_carbo_then_parp <- rbind(
+    glm(
+        formula = growth_rate ~ multiple_drug_classification + AGE + SEX + RACE,
+        data = df_to_plot
+    ) %>% sjPlot::get_model_data(type = "est") %>% filter(grepl("multiple_drug_classification", term)),
+    glm(
+        formula = growth_rate ~ multiple_drug_classification + AGE + SEX + RACE,
+        data = df_to_plot %>% filter(multiple_drug_classification != "Carboplatin")
+    ) %>% sjPlot::get_model_data(type = "est") %>% filter(grepl("multiple_drug_classification", term))
+)
+
+supp_fig3 <- df_to_plot %>%
+    ggplot(
+        aes(
+            x = multiple_drug_classification,
+            y = growth_rate,
+            fill = Cohort
+        )
+    ) +
+    geom_hline(yintercept = 0, color = "black", alpha = 0.3) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    labs(
+        x = "",
+        y = "Growth Rate of DDR Mutations",
+        fill = "Cohort"
+    ) +
+    panel_theme_basic +
+    scale_fill_manual(values = c("#0072B5FF", "#E18727FF", "#EAAB67FF")) +
+    theme(
+        legend.position = "top",
+        plot.margin = margin(2, 0, 0, 1, "cm"),
+        legend.text = element_text(size = 20),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16)
+    ) +
+    scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05), limits = c(NA,0.3)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 4, 1, 2, model_ddr_carbo_then_parp$p.value[1], model_ddr_carbo_then_parp$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 5, 1, 3, model_ddr_carbo_then_parp$p.value[2], model_ddr_carbo_then_parp$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 4.2, 2, 3, model_ddr_carbo_then_parp$p.value[3], model_ddr_carbo_then_parp$p.stars[3], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6))
+    #do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 4, 1, 1.8, model_ddr_carbo_then_parp$p.value[1], model_ddr_carbo_then_parp$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    #do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 5, 1, 2.2, model_ddr_carbo_then_parp$p.value[2], model_ddr_carbo_then_parp$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    #do.call(geom_signif, default_sig_data(df_to_plot %>% filter(Gene_Class == "DDR"), 4.2, 1.8, 2.2, model_ddr_carbo_then_parp$p.value[3], model_ddr_carbo_then_parp$p.stars[3], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6))
+supp_fig3
+ggsave(paste0(figures_save_path, "SuppFigure3_CarboBeforePARP_GrowthRates.png"), supp_fig3, width = 12, height = 8, units = "in", dpi = 300)
+```
+
+# Supp Figure 4 - mCA Growth x CH Growth Rate
+```{r supp_fig4, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+# There are 69 patients with mCA detected at either timepoint, and they also have a CH mutation detected at either timepoint
+has_mca_and_ch <- intersect(
+    mocha_timepoints$PatientID,
+    timepoints$DeID
+)
+
+df_to_plot <- timepoints %>%
+    filter(growth_rate != Inf & growth_rate != -Inf) %>%
+    filter(!(DeID %in% c(parp_then_carbo, carbo_then_parp))) %>%
+    filter(DeID %in% has_mca_and_ch) %>%
+    filter(DeID != "PA00051248") %>%  # Outlier with no mCA or CH
+    filter(Gene_Class == "DDR" | Gene_Class == "DTA") %>%
+    select(DeID, Cohort, change_in_VAF, growth_rate) %>%
+    dplyr::rename(PatientID = DeID) %>%
+    group_by(PatientID, Cohort) %>%
+    summarise(
+        average_change_in_VAF = mean(change_in_VAF, na.rm = TRUE),
+        average_CH_growth_rate = mean(growth_rate, na.rm = TRUE)
+    ) %>%
+    left_join(
+        mocha_timepoints %>%
+            filter(growth_rate != Inf & growth_rate != -Inf) %>%
+            filter(!(PatientID %in% c(parp_then_carbo, carbo_then_parp))) %>%
+            filter(PatientID %in% has_mca_and_ch) %>%
+            filter(event == "mCA") %>%
+            select(PatientID, Cohort, change_in_cf, growth_rate) %>%
+            group_by(PatientID, Cohort) %>%
+            summarise(
+                average_change_in_cf = mean(change_in_cf, na.rm = TRUE),
+                average_mCA_growth_rate = mean(growth_rate, na.rm = TRUE)
+            ),
+        by = c("PatientID", "Cohort")
+    )
+
+# By Growth Rate
+supp_fig4 <- df_to_plot %>%
+    ggplot(
+        aes(
+            x = average_CH_growth_rate,
+            y = average_mCA_growth_rate,
+            color = Cohort
+        )
+    ) +
+    geom_point(size = 3) +
+    labs(
+        x = "Average CH Growth Rate",
+        y = "Average mCA Growth Rate",
+        color = "Cohort"
+    ) +
+    panel_theme_basic +
+    scale_color_nejm() +
+    theme(
+        legend.position = "right",
+        legend.direction = "vertical",
+        plot.margin = margin(1, 0, 1, 1, "cm")
+    ) +
+    geom_smooth(method = "lm", se = FALSE)
+supp_fig4
+ggsave(paste0(figures_save_path, "SuppFigure4_CHvsCNA_GrowthRate.png"), supp_fig4, width = 10, height = 8, units = "in", dpi = 300)
+```
+
+# Supp Figure 5B - CD45 Isoforms
+```{r supp_fig5b, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+supp_fig5b <- make_mouse_cell_plot(
+    mouse_data[["SuppFigure 5B"]] %>%
+        mutate(Cohort = factor(Cohort, levels = c("Vehicle", "Cisplatin", "Talazoparib"))),
+    cell_col = "WT:WT Total Leukocytes",
+    title = "WT:WT Total Leukocytes", y_lab = "CD45.2 Cells\n(Normalized to 0-Week)"
+)
+supp_fig5b
+ggsave(paste0(figures_save_path, "SuppFigure5B_CD45_Isoforms.png"), supp_fig5b, width = 10, height = 8, units = "in", dpi = 300)
+```
+
+# Supp Figure 6 - Leukocytes Raw Chimerism
+```{r supp_fig_leukocytes_raw_chimerism, message = FALSE, warning = FALSE, fig.width=10, fig.height=6}
+supp_fig6 <- mouse_data[["SuppFigure 6"]] %>%
+    mutate(Cohort = factor(Cohort, levels = c("Vehicle", "Cisplatin", "Talazoparib", "Olaparib"))) %>%
+    group_by(Cohort, Week) %>%
+    summarise(
+      mean_value = mean(Leukocytes, na.rm = TRUE),
+      sd_value = sd(Leukocytes, na.rm = TRUE),
+      sem_value = sd(Leukocytes, na.rm = TRUE) / sqrt(n()),
+      .groups = "drop"
+    ) %>%
+    ggplot(
+      aes(
+        x = factor(Week),
+        y = mean_value,
+        fill = Cohort,
+        color = Cohort,
+        shape = Cohort,
+        group = Cohort
+      )
+    ) +
+    geom_point(size = 4) +
+    geom_line() +
+    geom_errorbar(
+      aes(
+        ymin = mean_value - sem_value,
+        ymax = mean_value + sem_value
+      ),
+      width = 0.5
+    ) +
+    labs(
+      x = "Weeks Post-Treatment",
+      y = "%CD45.2 Cells",
+      title = "Leukocytes",
+      fill = "Cohort",
+      color = "Cohort"
+    ) +
+    panel_theme_basic +
+    scale_fill_nejm() +
+    scale_color_nejm() +
+    scale_shape_manual(values = c(15, 16, 17, 18)) +
+    scale_y_continuous(limits = c(0, 80), labels = scales::label_number(accuracy = 1L)) +
+    theme(
+      legend.position = "right",
+      legend.direction = "vertical",
+      plot.margin = margin(1, 1, 1, 1, "cm"),
+      plot.title = element_text(hjust = 0.5)
+    ) +
+    scale_x_discrete(limits = as.character(0:20), expand = c(0, 0.5), breaks = c(0, 6, 10, 14, 18))
+supp_fig6 <- add_significance_annotation(supp_fig6, "P=0.0018", 19.5, 67, 40, size_text = 4)
+ggsave(paste0(figures_save_path, "SuppFigure6_Leukocytes_Raw_Chimerism.png"), supp_fig6, width = 12, height = 6, units = "in", dpi = 300)
+```
+
+
+# Supp Figure 7 - CH Growth Rate by Germline HRD Status
+```{r suppfig7_growth_rate_germline_HRD, message = FALSE, warning = FALSE}
+df_to_plot <- timepoints %>%
+    filter(growth_rate != Inf & growth_rate != -Inf) %>%
+    filter(Gene_Class == "DDR" | Gene_Class == "DTA") %>%
+    mutate(
+        BRCA = case_when(
+            HRD_Single %in% c("BRCA1", "BRCA2") ~ "BRCA1/2",
+            HRD_Single %in% c("ATM", "CHEK2", "RAD51D", "BRIP1") ~ "Other HRD Germline",  # Keep these as-is
+            TRUE ~ as.character(HRD_Single)  # Keep all other values as-is
+        ),
+        BRCA = ifelse(is.na(BRCA), "Other HRD Germline", BRCA)  # Replace NA with "BRIP1" because only 1 patient is missing
+    ) %>%
+    filter(BRCA %in% c("No Germline", "BRCA1/2", "Other HRD Germline"))
+
+model_growth_rate_germline_BRCA_class_glm <- purrr::cross_df(list(
+    class = c("DDR"),
+    germline = c("No Germline", "BRCA1/2", "Other HRD Germline")
+)) %>%
+    pmap_dfr(function(class, germline) {
+        print(paste("Processing", class, germline))
+        main <- if (germline != "No Germline") {
+            glm(
+                formula = growth_rate ~ Cohort + AGE + SEX + RACE,
+                data = df_to_plot %>%
+                    filter(Gene_Class == class, BRCA == germline) %>%
+                    filter(Cohort != "Healthy") %>%
+                    mutate(Cohort = factor(Cohort, levels = c("Carboplatin", "PARPi")))
+            ) %>%
+                sjPlot::get_model_data(type = "est") %>%
+                filter(grepl("Cohort", term)) %>%
+                mutate(
+                    Class = class, 
+                    BRCA = germline,
+                    term = "CarboplatinVSPARPi"
+                )
+        } else {
+            bind_rows(
+                glm(
+                    formula = growth_rate ~ Cohort + AGE + SEX + RACE,
+                    data = df_to_plot %>%
+                        filter(Gene_Class == class, BRCA == germline)
+                ) %>%
+                    sjPlot::get_model_data(type = "est") %>%
+                    filter(grepl("Cohort", term)) %>%
+                    mutate(
+                        Class = class, 
+                        BRCA = germline,
+                        term = case_when(
+                            term == "CohortCarboplatin" ~ "NoTreatmentVSCarboplatin",
+                            term == "CohortPARPi" ~ "NoTreatmentVSPARPi"
+                        )
+                    ),
+                glm(
+                    formula = growth_rate ~ Cohort + AGE + SEX + RACE,
+                    data = df_to_plot %>%
+                        filter(Gene_Class == class, BRCA == germline) %>%
+                        filter(Cohort != "Healthy") %>%
+                        mutate(Cohort = factor(Cohort, levels = c("Carboplatin", "PARPi")))
+                ) %>%
+                    sjPlot::get_model_data(type = "est") %>%
+                    filter(grepl("Cohort", term)) %>%
+                    mutate(
+                        Class = class, 
+                        BRCA = germline,
+                        term = "CarboplatinVSPARPi"
+                    )
+            )
+        }
+    })
+# Add the BRCA effect for each class and cohort
+brca_effect <- map_dfr(c("Carboplatin", "PARPi"), function(cohort) {
+    rbind(
+        glm(
+        formula = growth_rate ~ BRCA + AGE + SEX + RACE,
+        data = df_to_plot %>%
+            filter(Gene_Class == "DDR") %>%
+            filter(Cohort == cohort) %>%
+            mutate(BRCA = factor(BRCA, levels = c("No Germline", "BRCA1/2", "Other HRD Germline")))
+    ) %>%
+        sjPlot::get_model_data(type = "est") %>%
+        filter(grepl("BRCA", term)) %>%
+        mutate(
+            term = case_when(
+                term == "BRCABRCA1/2" ~ "NoGermlineVSBRCA1/2",
+                term == "BRCAOther HRD Germline" ~ "NoGermlineVSOtherHRD"
+            ),
+            Class = "DDR",
+            BRCA = cohort
+        ),
+        glm(
+            formula = growth_rate ~ BRCA + AGE + SEX + RACE,
+            data = df_to_plot %>%
+                filter(Gene_Class == "DDR") %>%
+                filter(Cohort == cohort) %>%
+                filter(BRCA != "No Germline") %>%
+                mutate(BRCA = factor(BRCA, levels = c("BRCA1/2", "Other HRD Germline")))
+        ) %>%
+        sjPlot::get_model_data(type = "est") %>%
+        filter(term == "BRCAOther HRD Germline") %>%
+        mutate(
+            term = "BRCA1/2VsOtherHRD",
+            Class = "DDR",
+            BRCA = cohort
+        )
+    )
+})
+model_growth_rate_germline_BRCA_class_glm <- bind_rows(model_growth_rate_germline_BRCA_class_glm, brca_effect)
+model_growth_rate_germline_BRCA_class_glm <- model_growth_rate_germline_BRCA_class_glm %>% filter(Class == "DDR")
+
+glm(
+    formula = growth_rate ~ BRCA + AGE + SEX + RACE,
+    data = df_to_plot %>%
+        filter(Gene_Class == "DDR") %>%
+        filter(Cohort == "PARPi") %>%
+        filter(BRCA != "No Germline") %>%
+        mutate(BRCA = factor(BRCA, levels = c("BRCA1/2", "Other HRD Germline")))
+) %>%
+sjPlot::get_model_data(type = "est")
+
+df_to_plot <- df_to_plot %>%
+    filter(BRCA %in% c("No Germline", "BRCA1/2", "Other HRD Germline")) %>%
+    filter(growth_rate != Inf & growth_rate != -Inf) %>% 
+    filter(Gene_Class == "DDR") %>%
+    mutate(BRCA = factor(BRCA, levels = c("No Germline", "BRCA1/2", "Other HRD Germline", "Other Germline")))
+supp_fig7 <- df_to_plot %>%
+    ggplot(
+        aes(
+            x = BRCA,
+            y = growth_rate,
+            fill = Cohort
+        )
+    ) +
+    geom_hline(yintercept = 0, color = "black", alpha = 0.3) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(position = position_jitterdodge(jitter.width=0.2), alpha = 0.2, color = "black") +
+    labs(
+        x = "",
+        y = "Growth Rate",
+        fill = "Cohort"
+    ) +
+    panel_theme_basic +
+    scale_fill_manual(values = treatment_colors) +
+    theme(plot.margin = margin(2, 0, 0, 1, "cm")) +
+    scale_y_continuous(trans = scales::pseudo_log_trans(0.001), limit = c(NA, 4), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 4, 0.75, 1, model_growth_rate_germline_BRCA_class_glm$p.value[1], model_growth_rate_germline_BRCA_class_glm$p.stars[1], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 5, 0.75, 1.25, model_growth_rate_germline_BRCA_class_glm$p.value[2], model_growth_rate_germline_BRCA_class_glm$p.stars[2], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 6, 1, 1.25, model_growth_rate_germline_BRCA_class_glm$p.value[3], model_growth_rate_germline_BRCA_class_glm$p.stars[3], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 4, 1.81, 2.19, model_growth_rate_germline_BRCA_class_glm$p.value[4], model_growth_rate_germline_BRCA_class_glm$p.stars[4], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 3, 2.81, 3.19, model_growth_rate_germline_BRCA_class_glm$p.value[5], model_growth_rate_germline_BRCA_class_glm$p.stars[5], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 4.5, 1, 1.81, model_growth_rate_germline_BRCA_class_glm$p.value[6], model_growth_rate_germline_BRCA_class_glm$p.stars[6], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 7, 1, 2.81, model_growth_rate_germline_BRCA_class_glm$p.value[7], model_growth_rate_germline_BRCA_class_glm$p.stars[7], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 5, 1.81, 2.81, model_growth_rate_germline_BRCA_class_glm$p.value[8], model_growth_rate_germline_BRCA_class_glm$p.stars[8], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 6, 1.25, 2.19, model_growth_rate_germline_BRCA_class_glm$p.value[9], model_growth_rate_germline_BRCA_class_glm$p.stars[9], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 8, 1.25, 3.19, model_growth_rate_germline_BRCA_class_glm$p.value[10], model_growth_rate_germline_BRCA_class_glm$p.stars[10], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot, 4, 2.19, 3.19, model_growth_rate_germline_BRCA_class_glm$p.value[11], model_growth_rate_germline_BRCA_class_glm$p.stars[11], show_values = TRUE, hide_ns = TRUE, size = 0.5, textsize = 6))
+supp_fig7
+ggsave(paste0(figures_save_path, "SuppFigure7_GrowthRate_HRD_Germline.png"), supp_fig7, width = 12, height = 8, units = "in", dpi = 300)
+```
+
+# Supp Figure 10 - No Rescue
+```{r supp_fig10, message = FALSE, warning = FALSE, fig.width=15, fig.height=20}
 df_to_plot <- timepoints %>%
   filter(growth_rate_sensitivity != Inf & growth_rate_sensitivity != -Inf) %>%
   filter(Gene_Class == "DDR" | Gene_Class == "DTA")
 
 model_growth_rate_gene_class_sensitivity <- rbind(
     glm(
-        formula = growth_rate_sensitivity ~ Cohort + AGE + RACE,
+        formula = growth_rate_sensitivity ~ Cohort + AGE + SEX + RACE,
         data = df_to_plot %>% filter(Gene_Class == "DDR")
     ) %>%
         sjPlot::get_model_data(type = "est") %>%
         filter(grepl("Cohort", term)),
     glm(
-        formula = growth_rate_sensitivity ~ Cohort + AGE + RACE,
+        formula = growth_rate_sensitivity ~ Cohort + AGE + SEX + RACE,
         data = df_to_plot %>% filter(Gene_Class == "DDR") %>%
-            filter(Cohort != "No Treatment") %>%
+            filter(Cohort != "Healthy") %>%
             mutate(Cohort = factor(Cohort, levels = c("Carboplatin", "PARPi")))
     ) %>%
         sjPlot::get_model_data(type = "est") %>%
@@ -1961,7 +3973,7 @@ counts <- df_to_plot %>%
     group_by(Cohort, Gene_Class) %>%
     summarise(n = n(), .groups = "drop")
 
-supp_fig9 <- df_to_plot %>%
+supp_fig10 <- df_to_plot %>%
     ggplot(
         aes(
             x = Gene_Class,
@@ -1982,11 +3994,11 @@ supp_fig9 <- df_to_plot %>%
     scale_fill_nejm() + 
     theme(plot.margin = margin(1, 0, 0, 1, "cm")) +
     scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05), limit = c(NA, 1.5)) +
-    do.call(geom_signif, default_sig(5.0, 0.75, 1, model_growth_rate_gene_class_sensitivity$p.value[1], model_growth_rate_gene_class_sensitivity$p.stars[1], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(5.6, 0.75, 1.25, model_growth_rate_gene_class_sensitivity$p.value[2], model_growth_rate_gene_class_sensitivity$p.stars[2], show_values = FALSE)) +
-    do.call(geom_signif, default_sig(6.4, 1, 1.25, model_growth_rate_gene_class_sensitivity$p.value[3], model_growth_rate_gene_class_sensitivity$p.stars[3], show_values = FALSE))
-supp_fig9
-ggsave(paste0(figures_save_path, "SuppFigure9_No_Rescue_GrowthRate_Sensitivity.png"), supp_fig9, width = 10, height = 8, units = "in", dpi = 300)
+    do.call(geom_signif, default_sig(5.0, 0.75, 1, model_growth_rate_gene_class_sensitivity$p.value[1], model_growth_rate_gene_class_sensitivity$p.stars[1], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(5.6, 0.75, 1.25, model_growth_rate_gene_class_sensitivity$p.value[2], model_growth_rate_gene_class_sensitivity$p.stars[2], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig(6.4, 1, 1.25, model_growth_rate_gene_class_sensitivity$p.value[3], model_growth_rate_gene_class_sensitivity$p.stars[3], show_values = TRUE, hide_ns = TRUE, textsize = 6))
+supp_fig10
+ggsave(paste0(figures_save_path, "SuppFigure10_No_Rescue_GrowthRate_Sensitivity.png"), supp_fig10, width = 10, height = 8, units = "in", dpi = 300)
 ```
 
 # Supplementary Table 1 - MSK Demographics
@@ -2019,12 +4031,12 @@ label(table_demographics$CANCER.DX) <- "Cancer Diagnosis"
 label(table_demographics$RACE) <- "Race"
 label(table_demographics$SEX) <- "Sex"
 
-table1(~ AGE + SEX + RACE + Smoking + Drug + CANCER.DX + HRD | Cohort, data = table_demographics %>% mutate(Cohort = factor(Cohort, levels = c("Untreated", "Carboplatin", "PARPi"))))
+table1(~ AGE + SEX + RACE + Smoking + Drug + CANCER.DX + HRD + HRD_Single | Cohort, data = table_demographics %>% mutate(Cohort = factor(Cohort, levels = c("Healthy", "Carboplatin", "PARPi"))))
 ```
 
 # Supplementary Table 4 - Longitudinal CH Mutations
 ```{r ch_mutation_table, echo=FALSE, message = FALSE, warning = FALSE}
-test_timepoints %>% 
+timepoints %>%
     select(key, Gene) %>% 
     mutate(Gene = factor(Gene, levels = gene_list)) %>%
     distinct() %>%
@@ -2032,7 +4044,62 @@ test_timepoints %>%
     fwrite(paste0(figures_save_path, "SuppTable4_Longitudinal_CH_Mutations.csv"))
 ```
 
-# Supplementary Table 5 - MoChA Demographics
+# Supplementary Table 5 - CH Mutations with Mutational Characteristics
+```{r ch_mutation_characteristics, echo=FALSE, message = FALSE, warning = FALSE}
+timepoints %>%
+    select(DeID, Cohort, key, Gene, preVAF, postVAF, change_in_days) %>%
+    mutate(Gene = factor(Gene, levels = gene_list)) %>%
+    arrange(Gene) %>%
+    dplyr::rename(
+        `VAF at Pre-Treatment` = preVAF,
+        `VAF at Post-Treatment` = postVAF,
+        `Days Between Timepoints` = change_in_days
+    ) %>%
+    fwrite(paste0(figures_save_path, "SuppTable5_CH_Mutations_Characteristics.csv"))
+```
+
+# Supplementary Table 6 - Prior Drugs
+```{r prior_drugs_table, echo=FALSE, message = FALSE, warning = FALSE}
+drug_info %>%
+    filter(!(DEID %in% c(Not_Paired_DEID, Samples_Less_Than_30_Days_Apart))) %>%
+    # We will also remove "oral" drugs that were only taken for a day since these are likely issues with data entry
+    filter(!(grepl("oral", APR_ROUTE) & APR_DURATION == 1)) %>%
+    # Now we need to find the oldest occurrence of a specific drug
+    group_by(DEID, druggeneric, drugclass_c, Cohort) %>%
+    summarise(earliest_drug_date = min(APR_START_DTE, na.rm = TRUE)) %>%
+    left_join(
+        deid_earliest_regimen_date %>%
+            select(DEID, Cohort, earliest_regimen_date),
+        by = c("DEID", "Cohort")
+    ) %>%
+    # These are all the drugs that were received prior to the earliest sample collection date, so we can be assured that they were received before the sample was collected
+    filter(
+        earliest_drug_date < (earliest_regimen_date)
+    ) %>%
+    mutate(
+        drugclass = case_when(
+            drugclass_c == "targeted_therapy_parp" ~ "PARP Inhibitor",
+            drugclass_c == "cytotoxic_therapy" ~ "Cytotoxic Therapy",
+            drugclass_c == "cytotoxic_therapy_platinum" ~ "Platinum Therapy",
+            drugclass_c == "radionuclide" ~ "Radionuclide",
+            drugclass_c == "radiation_therapy" ~ "Radiation Therapy",
+            drugclass_c == "immune_therapy" ~ "Immune Therapy",
+            #drugclass_c == "biologic_therapy" ~ "Biologic Therapy",
+            #drugclass_c == "hormonal_therapy" ~ "Hormonal Therapy",
+            #drugclass_c == "protein_kinase_inhibitor" ~ "Protein Kinase Inhibitor",
+            #drugclass_c == "targeted_therapy" ~ "Targeted Therapy",
+            TRUE ~ "Other Targeted Therapy"
+        )
+    ) %>%
+    # This oral entry overlaps between Olaparib and Niraparib, so we will remove it since it is likely a data entry error
+    filter(!(drugclass == "PARP Inhibitor" & Cohort == "PARPi" & DEID == "1567490")) %>%
+    ungroup() %>%
+    select(DEID, druggeneric, drugclass) %>%
+    pivot_wider(names_from = drugclass, values_from = druggeneric, values_fn = list(druggeneric = function(x) paste(unique(x), collapse = "; ")), values_fill = "") %>%
+    fwrite(paste0(figures_save_path, "SuppTable6_Patients_Prior_Drugs.csv"))
+```
+
+# Supplementary Table 7 - MoChA Demographics
 ```{r mocha_table, echo=FALSE, message = FALSE, warning = FALSE}
 label(mocha_demographics$AGE) <- "Age at Treatment Start"
 label(mocha_demographics$Sex_Reported) <- "Sex"

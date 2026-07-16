@@ -1,427 +1,427 @@
-DEID,AGE,Drug,Cohort,fromwhere,SEX,RACE,ETHNIC,Smoking,CANCER.DX,HRD
-1354292,62.06160164,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1373302,86.81998631,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD
-1396537,67.45790554,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Unknown,Prostate,Missing
-1426386,76.58863792,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,Missing
-1450422,57.89185489,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing
-145068,68.65434634,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Unknown,Breast,No Germline
-1496456,69.97125257,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1516623,56.54757016,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing
-1520937,75.46338125,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing
-1540488,62.88295688,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1547582,69.19644079,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1567643,52.28473648,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Missing
-1573250,76.10951403,Carboplatin,Carboplatin,MSK,Male,Hispanic,Hispanic or Latino,Previous,Prostate,No Germline
-1619820,63.13483915,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing
-1650446,71.37029432,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1666466,67.78097194,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1669163,72.92813142,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1683705,56.56125941,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing
-1685481,59.24435318,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing
-1686942,70.49144422,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing
-1704778,61.02121834,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Unknown,Prostate,Missing
-1707056,77.24845996,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing
-1779924,67.80835044,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,Missing
-1825092,50.35728953,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Current,Ovary/Uterus,HRD
-1825539,55.04449008,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,Missing
-1829692,73.51129363,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD
-1834410,51.55920602,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1901638,72.89801506,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Missing
-1910473,71.04175222,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Lung/Mesothelioma,Missing
-1923454,69.07871321,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Current,Unknown,Missing
-1931883,63.95893224,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Lung/Mesothelioma,No Germline
-2038431,74.11088296,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,Missing
-2053831,76.62970568,Talazoparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Never,Prostate,Missing
-2056484,48.12320329,Olaparib,PARPi,MSK,Male,Asian,Not Hispanic or Latino,Previous,Unknown,No Germline
-2069216,74.98973306,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Previous,Unknown,Missing
-2088427,55.68240931,Carboplatin,Carboplatin,MSK,Male,White,Unknown,Previous,Unknown,No Germline
-2131385,75.47433265,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,Missing
-2157070,60.62422998,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Unknown,Missing
-330923,69.91649555,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing
-366206,79.87679671,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing
-390174,70.65571526,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-4057,66.11635866,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing
-58830,81.79329227,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing
-663882,75.90691307,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Missing
-907411,67.94250513,Olaparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Never,Prostate,HRD
-934203,72.42162902,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Lung/Mesothelioma,No Germline
-1329397,70.32717317,Talazoparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Previous,Thyroid,Missing
-1024428,61.45379877,Talazoparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Never,Prostate,No Germline
-1100032,67.11019849,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1100999,75.20876112,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Current,Prostate,HRD
-1108236,73.36344969,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,HRD
-1118815,60.66803559,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Missing
-1122913,71.03901437,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Never,Prostate,No Germline
-1140340,57.51129363,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-115337,58.31074606,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Previous,Prostate,Missing
-1155740,59.97262149,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,No Germline
-1173050,76.90349076,Rucaparib,PARPi,MSK,Male,Unknown,Hispanic or Latino,Never,Prostate,No Germline
-1295247,65.33333333,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1334878,56.12320329,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1339966,78.46954141,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Previous,Prostate,No Germline
-1347733,73.07323751,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1387366,64.93908282,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1396229,54.70773443,Rucaparib,PARPi,MSK,Male,Black,Not Hispanic or Latino,Never,Prostate,No Germline
-1495825,49.63997262,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,HRD
-1517714,59.39767283,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1530395,70.52703628,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1536848,58.74880219,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1537527,49.39904175,Rucaparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Never,Prostate,No Germline
-1538010,60.81040383,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,HRD
-1543250,75.54825462,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1592606,64.1779603,Carboplatin,Carboplatin,MSK,Male,Asian,Not Hispanic or Latino,Never,Prostate,No Germline
-1592759,55.69336071,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1608354,53.0513347,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,HRD
-1608579,59.94524298,Rucaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,HRD
-1620504,64.54483231,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1622439,72.67624914,Carboplatin,Carboplatin,MSK,Male,Unknown,Not Hispanic or Latino,Previous,Prostate,No Germline
-1637996,72.49281314,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Other Germline
-1644510,58.91581109,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,No Germline
-1651767,72.32032854,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1657258,73.37713895,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1699017,61.0403833,Carboplatin,Carboplatin,MSK,Male,Asian,Not Hispanic or Latino,Never,Prostate,No Germline
-1699221,57.21013005,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Previous,Prostate,No Germline
-1700234,66.02053388,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Unknown,Prostate,HRD
-1702898,64.20260096,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Other Germline
-1720414,60.3449692,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,HRD
-1721015,66.93223819,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1729295,72.69815195,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1732307,72.16427105,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1734269,67.99726215,Olaparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Previous,Prostate,No Germline
-1734282,55.44421629,Carboplatin,Carboplatin,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline
-1739789,47.59753593,Rucaparib,PARPi,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline
-1747097,60.54209446,Carboplatin,Carboplatin,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline
-1748202,75.55920602,Carboplatin,Carboplatin,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline
-1752272,54.29158111,Olaparib,PARPi,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline
-1755649,81.83983573,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1763320,61.72210815,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1778499,73.08418891,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1782310,71.9890486,Rucaparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Previous,Prostate,No Germline
-1786242,70.26694045,Rucaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1788165,64.96919918,Rucaparib,PARPi,MSK,Male,Other,Not Hispanic or Latino,Never,Prostate,No Germline
-1794466,59.27994524,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1795350,65.48939083,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1799371,55.15947981,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1803800,52,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1816042,60.49828884,Rucaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1826251,77.78781656,Rucaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1829047,70.96783025,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1878133,65.49486653,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-1900284,56.1670089,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-1968673,62.03969884,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline
-295093,71.52087611,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline
-34454,68.04928131,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Unknown,Prostate,HRD
-970359,71.17043121,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,HRD
-1567490,61.15263518,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Peritoneum,No Germline
-1966221,69.47843943,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Pancreas,No Germline
-1973348,74.14647502,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Pancreas,HRD
-1999963,63.37029432,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Pancreas,No Germline
-863277,68.81040383,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Pancreas,No Germline
-1055089,44.09856263,Olaparib,PARPi,MSK,Female,Black,Not Hispanic or Latino,Never,Ovary/Uterus,HRD
-1141596,66.34907598,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1426672,60.10130048,Niraparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Never,Ovary/Uterus,HRD
-1644795,59.27994524,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Current,Ovary/Uterus,HRD
-1648855,57.10609172,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline
-1673333,78.40930869,Rucaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1694400,70.40657084,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1737022,60.1724846,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline
-1749149,49.18822724,Carboplatin,Carboplatin,MSK,Female,Unknown,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1777686,66.67488022,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline
-1785592,71.23340178,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline
-1792676,72.35318275,Carboplatin,Carboplatin,MSK,Female,Asian,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1799068,67.63586585,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD
-1803310,70.72142368,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1810711,76.12594114,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD
-1812344,60.46817248,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1817769,55.27173169,Olaparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1826232,58.05612594,Rucaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD
-1897368,56.83230664,Olaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Ovary/Uterus,HRD
-1923474,73.59616701,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1932899,81.06776181,Carboplatin,Carboplatin,MSK,Female,Black,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline
-1948372,50.36276523,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-1968442,61.38809035,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD
-2041190,84.39972621,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-2042633,57.36618754,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD
-2043392,61.9028063,Olaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline
-2044570,59.51540041,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline
-2045489,34.93223819,Carboplatin,Carboplatin,MSK,Female,White,Unknown,Never,Ovary/Uterus,No Germline
-2057200,40.65434634,Talazoparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-2075647,61.26762491,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-2083023,62.49144422,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD
-2098310,59.24982888,Rucaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD
-2105089,47.35934292,Olaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Ovary/Uterus,HRD
-2130036,54.73785079,Carboplatin,Carboplatin,MSK,Female,Black,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline
-2150307,66.954141,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Unknown,Ovary/Uterus,No Germline
-2158376,65.58247775,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Unknown,Ovary/Uterus,No Germline
-2164291,93.96577687,Carboplatin,Carboplatin,MSK,Female,Asian,Not Hispanic or Latino,Unknown,Ovary/Uterus,No Germline
-576532,64.55578371,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD
-82148,71.63312799,Olaparib,PARPi,MSK,Female,Unknown,Unknown,Previous,Ovary/Uterus,HRD
-957089,63.321013,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD
-PA00000852,84.5,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Current,None,No Germline
-PA00050902,75.8,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00001018,79,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00001039,69.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline
-PA00001040,81.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00006315,75.6,Untreated,Untreated,Carlos,Female,Asian,Not Hispanic or Latino,Never,None,Missing
-PA00006330,75.5,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00006333,69.4,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00050931,61.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00033753,79.2,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00050936,63.5,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Never,None,Missing
-PA00050941,59.9,Untreated,Untreated,Carlos,Male,White,Unknown,Never,None,Missing
-PA00051755,56.1,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00001280,67.2,Untreated,Untreated,Carlos,Male,White,Unknown,,None,Missing
-PA00002537,72.5,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00002542,74,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002608,88.8,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002618,79.2,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002646,54.8,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00008065,64,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline
-PA00002696,62,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002733,59.4,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002741,69.9,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002754,77.1,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002760,57.2,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00002773,58.7,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002811,58.4,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002814,58.4,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002816,57.5,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline
-PA00002819,70,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Other Germline
-PA00002836,59.8,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00008218,49.8,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00002859,57.4,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002860,76.8,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,HRD
-PA00002866,63.3,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002868,63.4,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00002876,59.7,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002893,67.6,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002908,67.6,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002937,69.5,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002943,68,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002945,60.6,Untreated,Untreated,Carlos,Male,White,Unknown,Never,None,Missing
-PA00002949,62.8,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002955,63.7,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00002968,60.4,Untreated,Untreated,Carlos,Female,White,Unknown,Never,None,Missing
-PA00002984,67.3,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Current,None,Other Germline
-PA00002987,68.4,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Other Germline
-PA00002998,60.7,Untreated,Untreated,Carlos,Female,Asian,Unknown,Current,None,HRD
-PA00003020,75.5,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003027,70.7,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003054,50.6,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00003080,68.9,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003085,67.7,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00008474,81.9,Untreated,Untreated,Carlos,Male,White,Unknown,Never,None,No Germline
-PA00003104,83.6,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003113,82.5,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline
-PA00003142,58.4,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003150,69.6,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003162,75.1,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Never,None,Missing
-PA00003174,82,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003183,55,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003249,77.7,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003269,81.2,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003291,55.4,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,Missing
-PA00003319,75.3,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003322,77.7,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003331,68.3,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,,None,Missing
-PA00003349,74.5,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00003351,55.1,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00003387,81.9,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003415,68.6,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003416,75.8,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003441,72.8,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003451,88.4,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003468,78,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,HRD
-PA00003480,62.4,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003491,80.5,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,HRD
-PA00003494,64.8,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003497,88,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Current,None,Other Germline
-PA00003500,65.9,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00003520,76,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,,None,No Germline
-PA00003521,72.8,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,,None,Missing
-PA00003539,57.6,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Other Germline
-PA00003548,69.4,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003588,69,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003595,63.5,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Current,None,No Germline
-PA00003596,49.1,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Current,None,No Germline
-PA00003603,74.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003606,59.8,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00003607,57.1,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Current,None,No Germline
-PA00003616,76.3,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,Other Germline
-PA00003617,59.9,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003636,85.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003637,75.6,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003659,61.4,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00003666,63.7,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003669,66.3,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Current,None,No Germline
-PA00003677,67.6,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003678,66.9,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003695,42.7,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00003698,76.9,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003713,67.2,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Current,None,No Germline
-PA00003714,43.5,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,Missing
-PA00003716,60.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003719,68.6,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003724,68.9,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003725,68,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003760,78.4,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003766,68.8,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003767,79.3,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003772,72,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00009134,73.6,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00009136,71.5,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Never,None,Other Germline
-PA00009139,75.8,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003784,56.2,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,Missing
-PA00003785,73.8,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003787,62.9,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline
-PA00003789,65.1,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00003798,65.7,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003800,67.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00009180,67.5,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00009187,71.7,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00009189,53.9,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00009191,68.3,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00009195,56.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00009197,63.7,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00009200,53.8,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00033790,61.4,Untreated,Untreated,Carlos,Female,Unknown,Not Hispanic or Latino,Never,None,No Germline
-PA00033792,50.1,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00033798,71.9,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00033801,63.6,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00051807,59.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00051808,45.9,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00051782,45.8,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00051191,50.4,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00003814,77,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00003831,76.3,Untreated,Untreated,Carlos,Male,Unknown,Not Hispanic or Latino,Never,None,No Germline
-PA00003842,72.7,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00003872,69.4,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00003873,79.7,Untreated,Untreated,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00003885,69.7,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00033807,68.6,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00009314,78.5,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00009319,59.8,Untreated,Untreated,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline
-PA00033809,68.8,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00009346,68.2,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00009347,72.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00009349,74.7,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00033811,69.2,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00009355,65.9,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00009357,68.4,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00033813,67.3,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00033816,62.8,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00033828,72.2,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00033844,75.4,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00033846,69,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline
-PA00033847,63.9,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00033851,60.5,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00051248,56.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00051249,64.5,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing
-PA00051758,53.6,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00004282,57.3,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,,None,Missing
-PA00004376,58.3,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,,None,Missing
-PA00004410,55,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,,None,Missing
-PA00004444,82.2,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00004572,73.2,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,,None,No Germline
-PA00004634,41.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,,None,No Germline
-PA00004635,39.8,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,,None,Missing
-PA00004652,76.8,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing
-PA00004984,79.9,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline
-PA00005092,62.3,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,,None,No Germline
-PA00005116,44.4,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,,None,Missing
-PA00005117,34.1,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,,None,Missing
-PA00005121,58,Untreated,Untreated,Carlos,Female,White,Not Hispanic or Latino,,None,Missing
-PA00005122,34.4,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,,None,Missing
-PA00013527,47.4,Untreated,Untreated,Carlos,Male,White,Not Hispanic or Latino,,None,Missing
-1123912,82.12183436,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Never,Lung/Mesothelioma,Missing
-1967684,59.44421629,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Lung/Mesothelioma,No Germline
-2158430,76.61054073,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-2168630,66.16016427,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-72938,84.84052019,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1020003,54,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1030005,61,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1040005,69,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1090002,66,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1100003,73,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1180001,69,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1240001,70,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1250005,78,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1350004,71,Carboplatin,Carboplatin,G1 Therapeutics,Male,Asian,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1350006,72,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1350008,66,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1540001,70,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1680001,69,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-1720001,67,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9130001,67,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9130003,72,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9230001,39,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9240002,64,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9240005,68,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9330001,64,Carboplatin,Carboplatin,G1 Therapeutics,Female,Hispanic,Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9350001,83,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9350003,57,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9350004,66,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9510002,56,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9510004,67,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9510008,68,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-9510010,61,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-10125003,71,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-10175002,69,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-10175003,74,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-10305005,78,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-10305007,64,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-10315001,68,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12125001,75,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12155003,66,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12155006,61,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12155007,68,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12215003,52,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12215004,65,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12225001,75,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Unknown,Unknown,Lung/Mesothelioma,No Germline
-12275002,58,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12395001,57,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12395004,59,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12415002,45,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12425001,65,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12435002,66,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12435003,53,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12445001,63,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12465001,63,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12465004,61,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12465005,54,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12525002,48,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12525003,69,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12555008,53,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12555009,59,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12565001,65,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12585001,69,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12585002,61,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-12595004,71,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline
-277626,66.29705681,Talazoparib,PARPi,MSK,Female,Unknown,Unknown,Never,Esophagus,No Germline
-1325756,58.50513347,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Colon/Rectum,HRD
-1781724,52.18069815,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Colon/Rectum,No Germline
-2069163,82.770705,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Cancer of Unknown Primary,No Germline
-831409,61.42368241,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Cancer of Unknown Primary,HRD
-1463493,78.35728953,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Breast,HRD
-1561639,47.67693361,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Breast,No Germline
-1627016,55.94250513,Talazoparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Never,Breast,No Germline
-1697854,51.45516769,Talazoparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Breast,No Germline
-1728092,42.78439425,Talazoparib,PARPi,MSK,Female,Unknown,Not Hispanic or Latino,Never,Breast,No Germline
-1743659,51.12936345,Olaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Breast,No Germline
-1818903,31.95893224,Talazoparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Never,Breast,No Germline
-191197,52.09856263,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Breast,HRD
-2017905,34.78439425,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Breast,HRD
-2030544,64.10130048,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Breast,No Germline
-2080542,50.92128679,Talazoparib,PARPi,MSK,Female,Black,Not Hispanic or Latino,Never,Breast,HRD
-2091722,37.53045859,Talazoparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Breast,No Germline
-2134407,62.89938398,Talazoparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Previous,Breast,HRD
-251740,59.92881588,Talazoparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Breast,No Germline
-1631988,76.54483231,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Bladder,HRD
-U10-WU-025,64.8,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Previous,Ovary/Uterus,HRD
-U10-WU-026,73.1,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,No Germline
-U10-WU-027,57.2,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,HRD
-U10-WU-031,60.2,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,Missing
-U10-WU-032,65.4,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,No Germline
-U10-WU-078,66.2,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,Other Germline
-U10-WU-084,50.4,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,No Germline
-U10-WU-090,83.8,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,Missing
+DEID,AGE,Drug,Cohort,fromwhere,SEX,RACE,ETHNIC,Smoking,CANCER.DX,HRD,partc_result,Germline_Gene,Inheritance,HRD_Single
+1354292,62.06160164,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1373302,86.81998631,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD Germline,Positive,BRCA2,AD,BRCA2
+1396537,67.45790554,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Unknown,Prostate,Missing,Missing,Missing,"",Missing
+1426386,76.58863792,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,Missing,Missing,Missing,"",Missing
+1450422,57.89185489,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing,Missing,Missing,"",Missing
+145068,68.65434634,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Unknown,Breast,Missing,Missing,Missing,"",Missing
+1496456,69.97125257,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1516623,56.54757016,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing,Missing,Missing,"",Missing
+1520937,75.46338125,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1540488,62.88295688,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1547582,69.19644079,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,Missing,Missing,Missing,"",Missing
+1567643,52.28473648,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Missing,Missing,Missing,"",Missing
+1573250,76.10951403,Carboplatin,Carboplatin,MSK,Male,Hispanic,Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1619820,63.13483915,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing,Missing,Missing,"",Missing
+1650446,71.37029432,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1666466,67.78097194,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1669163,72.92813142,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1683705,56.56125941,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing,Missing,Missing,"",Missing
+1685481,59.24435318,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1686942,70.49144422,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1704778,61.02121834,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Unknown,Prostate,Missing,Missing,Missing,"",Missing
+1707056,77.24845996,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1779924,67.80835044,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,Missing,Missing,Missing,"",Missing
+1825092,50.35728953,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Current,Ovary/Uterus,HRD Germline,Positive,BRCA1,AD,BRCA1
+1825539,55.04449008,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,Missing,Missing,Missing,"",Missing
+1829692,73.51129363,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA1,AD,BRCA1
+1834410,51.55920602,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1901638,72.89801506,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Missing,Missing,Missing,"",Missing
+1910473,71.04175222,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Lung/Mesothelioma,Missing,Missing,Missing,"",Missing
+1923454,69.07871321,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Current,Unknown,Missing,Missing,Missing,"",Missing
+1931883,63.95893224,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Lung/Mesothelioma,Missing,Missing,Missing,"",Missing
+2038431,74.11088296,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,Missing,Missing,Missing,"",Missing
+2053831,76.62970568,Talazoparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Never,Prostate,Missing,Missing,Missing,"",Missing
+2056484,48.12320329,Olaparib,PARPi,MSK,Male,Asian,Not Hispanic or Latino,Previous,Unknown,No Germline,Negative,Negative,"",No Germline
+2069216,74.98973306,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Previous,Unknown,Missing,Missing,Missing,"",Missing
+2088427,55.68240931,Carboplatin,Carboplatin,MSK,Male,White,Unknown,Previous,Unknown,No Germline,Negative,Negative,"",No Germline
+2131385,75.47433265,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,Missing,Missing,Missing,"",Missing
+2157070,60.62422998,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Unknown,Missing,Missing,Missing,"",Missing
+330923,69.91649555,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+366206,79.87679671,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+390174,70.65571526,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+4057,66.11635866,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,Missing,Missing,Missing,"",Missing
+58830,81.79329227,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+663882,75.90691307,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Missing,Missing,Missing,"",Missing
+907411,67.94250513,Olaparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Never,Prostate,HRD Germline,Positive,ATM,AD,ATM
+934203,72.42162902,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Lung/Mesothelioma,No Germline,Negative,Negative,"",No Germline
+1329397,70.32717317,Talazoparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Previous,Thyroid,Missing,Missing,Missing,"",Missing
+1024428,61.45379877,Talazoparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1100032,67.11019849,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1100999,75.20876112,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Current,Prostate,HRD Germline,Positive,BRCA2,AD,BRCA2
+1108236,73.36344969,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,HRD Germline,Positive,BRIP1,AD,BRIP1
+1118815,60.66803559,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Missing,Missing,Missing,"",Missing
+1122913,71.03901437,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1140340,57.51129363,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,HRD Germline,Positive,BRCA2,AD,BRCA2
+115337,58.31074606,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Previous,Prostate,Missing,Missing,Missing,"",Missing
+1155740,59.97262149,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,No Germline,Negative,Negative,"",No Germline
+1173050,76.90349076,Rucaparib,PARPi,MSK,Male,Unknown,Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1295247,65.33333333,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1334878,56.12320329,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1339966,78.46954141,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1347733,73.07323751,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1387366,64.93908282,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1396229,54.70773443,Rucaparib,PARPi,MSK,Male,Black,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1495825,49.63997262,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,HRD Germline,Positive,ATM,AD,ATM
+1517714,59.39767283,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1530395,70.52703628,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1536848,58.74880219,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1537527,49.39904175,Rucaparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1538010,60.81040383,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,HRD Germline,Positive,BRCA1,AD,BRCA1
+1543250,75.54825462,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1592606,64.1779603,Carboplatin,Carboplatin,MSK,Male,Asian,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1592759,55.69336071,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1608354,53.0513347,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,HRD Germline,Positive,BRCA2,AD,BRCA2
+1608579,59.94524298,Rucaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,HRD Germline,Positive,ATM,AD,ATM
+1620504,64.54483231,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1622439,72.67624914,Carboplatin,Carboplatin,MSK,Male,Unknown,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1637996,72.49281314,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Other Germline,Positive,APC,AD,Other Germline
+1644510,58.91581109,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Current,Prostate,No Germline,Negative,Negative,"",No Germline
+1651767,72.32032854,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1657258,73.37713895,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1699017,61.0403833,Carboplatin,Carboplatin,MSK,Male,Asian,Not Hispanic or Latino,Never,Prostate,No Germline,Positive,MUTYH,AR,No Germline
+1699221,57.21013005,Carboplatin,Carboplatin,MSK,Male,Black,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1700234,66.02053388,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Unknown,Prostate,HRD Germline,Positive,BRCA2,AD,BRCA2
+1702898,64.20260096,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,Other Germline,Positive,FH,AD,Other Germline
+1720414,60.3449692,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,HRD Germline,Positive,BRCA2,AD,BRCA2
+1721015,66.93223819,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1729295,72.69815195,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Positive,MUTYH,AR,No Germline
+1732307,72.16427105,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1734269,67.99726215,Olaparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1734282,55.44421629,Carboplatin,Carboplatin,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1739789,47.59753593,Rucaparib,PARPi,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1747097,60.54209446,Carboplatin,Carboplatin,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1748202,75.55920602,Carboplatin,Carboplatin,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1752272,54.29158111,Olaparib,PARPi,MSK,Male,Unknown,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1755649,81.83983573,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1763320,61.72210815,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,HRD Germline,Positive,ATM,AD,ATM
+1778499,73.08418891,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1782310,71.9890486,Rucaparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1786242,70.26694045,Rucaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1788165,64.96919918,Rucaparib,PARPi,MSK,Male,Other,Not Hispanic or Latino,Never,Prostate,No Germline,Positive,MUTYH,AR,No Germline
+1794466,59.27994524,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1795350,65.48939083,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1799371,55.15947981,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1803800,52,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1816042,60.49828884,Rucaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1826251,77.78781656,Rucaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1829047,70.96783025,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1878133,65.49486653,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+1900284,56.1670089,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+1968673,62.03969884,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,No Germline,Negative,Negative,"",No Germline
+295093,71.52087611,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Previous,Prostate,No Germline,Negative,Negative,"",No Germline
+34454,68.04928131,Olaparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Unknown,Prostate,HRD Germline,Positive,BRCA2,AD,BRCA2
+970359,71.17043121,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Never,Prostate,HRD Germline,Positive,BRCA2,AD,BRCA2
+1567490,61.15263518,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Peritoneum,No Germline,Negative,Negative,"",No Germline
+1966221,69.47843943,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Pancreas,HRD Germline,Positive,BRCA1,AD,BRCA1
+1973348,74.14647502,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Pancreas,HRD Germline,Positive,BRCA2,AD,BRCA2
+1999963,63.37029432,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Pancreas,No Germline,Negative,Negative,"",No Germline
+863277,68.81040383,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Pancreas,No Germline,Negative,Negative,"",No Germline
+1055089,44.09856263,Olaparib,PARPi,MSK,Female,Black,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA1,AD,BRCA1
+1141596,66.34907598,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Positive,MUTYH,AR,No Germline
+1426672,60.10130048,Niraparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA2,AD,BRCA2
+1644795,59.27994524,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Current,Ovary/Uterus,HRD Germline,Positive,BRCA1,AD,BRCA1
+1648855,57.10609172,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1673333,78.40930869,Rucaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1694400,70.40657084,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1737022,60.1724846,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1749149,49.18822724,Carboplatin,Carboplatin,MSK,Female,Unknown,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1777686,66.67488022,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1785592,71.23340178,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1792676,72.35318275,Carboplatin,Carboplatin,MSK,Female,Asian,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1799068,67.63586585,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA2,AD,BRCA2
+1803310,70.72142368,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Positive,RECQL4,AR,No Germline
+1810711,76.12594114,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD Germline,Positive,BRCA2,AD,BRCA2
+1812344,60.46817248,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1817769,55.27173169,Olaparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,RAD51D,AD,RAD51D
+1826232,58.05612594,Rucaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD Germline,Positive,RAD51D,AD,RAD51D
+1897368,56.83230664,Olaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA2,AD,BRCA2
+1923474,73.59616701,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1932899,81.06776181,Carboplatin,Carboplatin,MSK,Female,Black,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1948372,50.36276523,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+1968442,61.38809035,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,MUTYH;CHEK2,AR;AD,CHEK2
+2041190,84.39972621,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+2042633,57.36618754,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA2,AD,BRCA2
+2043392,61.9028063,Olaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+2044570,59.51540041,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+2045489,34.93223819,Carboplatin,Carboplatin,MSK,Female,White,Unknown,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+2057200,40.65434634,Talazoparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA1,AD,BRCA1
+2075647,61.26762491,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA1,AD,BRCA1
+2083023,62.49144422,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA1;FH,AD;AD,BRCA1
+2098310,59.24982888,Rucaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD Germline,Positive,BRCA1,AD,BRCA1
+2105089,47.35934292,Olaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA1,AD,BRCA1
+2130036,54.73785079,Carboplatin,Carboplatin,MSK,Female,Black,Not Hispanic or Latino,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+2150307,66.954141,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Unknown,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+2158376,65.58247775,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Unknown,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+2164291,93.96577687,Carboplatin,Carboplatin,MSK,Female,Asian,Not Hispanic or Latino,Unknown,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+576532,64.55578371,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Ovary/Uterus,HRD Germline,Positive,BRCA1;MUTYH,AD;AD,BRCA1
+82148,71.63312799,Olaparib,PARPi,MSK,Female,Unknown,Unknown,Previous,Ovary/Uterus,HRD Germline,Positive,BRCA2,AD,BRCA2
+957089,63.321013,Niraparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Ovary/Uterus,HRD Germline,Positive,BRCA1,AD,BRCA1
+PA00000852,84.5,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Current,None,No Germline,Negative,Negative,"",No Germline
+PA00050902,75.8,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00001018,79,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00001039,69.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline,Positive,BMPR1A;FANCA,AD;AR,Other Germline
+PA00001040,81.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00006315,75.6,Untreated,Healthy,Carlos,Female,Asian,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00006330,75.5,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00006333,69.4,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00050931,61.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00033753,79.2,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00050936,63.5,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00050941,59.9,Untreated,Healthy,Carlos,Male,White,Unknown,Never,None,Missing,Missing,Missing,"",Missing
+PA00051755,56.1,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00001280,67.2,Untreated,Healthy,Carlos,Male,White,Unknown,"",None,Missing,Missing,Missing,"",Missing
+PA00002537,72.5,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00002542,74,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002608,88.8,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002618,79.2,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002646,54.8,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00008065,64,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline,Positive,APC,AD,Other Germline
+PA00002696,62,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002733,59.4,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002741,69.9,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Positive,ABCB11,AR,No Germline
+PA00002754,77.1,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002760,57.2,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00002773,58.7,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002811,58.4,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Positive,XPC,AR,No Germline
+PA00002814,58.4,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002816,57.5,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline,Positive,FAH,AD,Other Germline
+PA00002819,70,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Other Germline,Positive,PHOX2B,AD,Other Germline
+PA00002836,59.8,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Positive,TNFRSF13B,AR,No Germline
+PA00008218,49.8,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00002859,57.4,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002860,76.8,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,HRD Germline,Positive,CHEK2,AD,CHEK2
+PA00002866,63.3,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002868,63.4,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00002876,59.7,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002893,67.6,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002908,67.6,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002937,69.5,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002943,68,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002945,60.6,Untreated,Healthy,Carlos,Male,White,Unknown,Never,None,Missing,Missing,Missing,"",Missing
+PA00002949,62.8,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002955,63.7,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00002968,60.4,Untreated,Healthy,Carlos,Female,White,Unknown,Never,None,Missing,Missing,Missing,"",Missing
+PA00002984,67.3,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Current,None,Other Germline,Positive,TPP1;DIS3,AD;AD,Other Germline
+PA00002987,68.4,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Other Germline,Positive,BARD1,AD,Other Germline
+PA00002998,60.7,Untreated,Healthy,Carlos,Female,Asian,Unknown,Current,None,HRD Germline,Positive,RAD51D;UNC13D,AD;AR,RAD51D
+PA00003020,75.5,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003027,70.7,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003054,50.6,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003080,68.9,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003085,67.7,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00008474,81.9,Untreated,Healthy,Carlos,Male,White,Unknown,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003104,83.6,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003113,82.5,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline,Positive,RECQL,AD,Other Germline
+PA00003142,58.4,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Positive,USP45;GJB2,"?,?",No Germline
+PA00003150,69.6,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003162,75.1,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003174,82,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003183,55,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003249,77.7,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Positive,FANCC,AR,No Germline
+PA00003269,81.2,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003291,55.4,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003319,75.3,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003322,77.7,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003331,68.3,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00003349,74.5,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003351,55.1,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003387,81.9,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003415,68.6,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003416,75.8,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003441,72.8,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003451,88.4,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003468,78,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,HRD Germline,Positive,ATM;GJB2,AD;?,ATM
+PA00003480,62.4,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003491,80.5,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,HRD Germline,Positive,RAD51D,AD,RAD51D
+PA00003494,64.8,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003497,88,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Current,None,No Germline,Positive,COL7A1,?,No Germline
+PA00003500,65.9,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003520,76,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,"",None,No Germline,Negative,Negative,"",No Germline
+PA00003521,72.8,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00003539,57.6,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Positive,DHCR7;SERPINA1,?;?,No Germline
+PA00003548,69.4,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003588,69,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Positive,CFTR,?,No Germline
+PA00003595,63.5,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Current,None,No Germline,Negative,Negative,"",No Germline
+PA00003596,49.1,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Current,None,No Germline,Positive,CTC1,AR,No Germline
+PA00003603,74.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Positive,MUTYH,AR,No Germline
+PA00003606,59.8,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003607,57.1,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Current,None,No Germline,Negative,Negative,"",No Germline
+PA00003616,76.3,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,Other Germline,Positive,FH,AD,Other Germline
+PA00003617,59.9,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003636,85.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003637,75.6,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003659,61.4,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003666,63.7,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003669,66.3,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Current,None,No Germline,Positive,NTHL1,AR,No Germline
+PA00003677,67.6,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003678,66.9,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003695,42.7,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003698,76.9,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003713,67.2,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Current,None,No Germline,Negative,Negative,"",No Germline
+PA00003714,43.5,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003716,60.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003719,68.6,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Positive,CTC1,AR,No Germline
+PA00003724,68.9,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Positive,DHCR7;BLM,?;AR,No Germline
+PA00003725,68,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003760,78.4,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003766,68.8,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003767,79.3,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline,Positive,FANCM,AR,No Germline
+PA00003772,72,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00009134,73.6,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00009136,71.5,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Never,None,Other Germline,Positive,FH,AD,Other Germline
+PA00009139,75.8,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003784,56.2,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003785,73.8,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003787,62.9,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Other Germline,Positive,PHOX2B,AD,Other Germline
+PA00003789,65.1,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003798,65.7,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003800,67.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00009180,67.5,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00009187,71.7,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00009189,53.9,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00009191,68.3,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00009195,56.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00009197,63.7,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Positive,ERCC6L2,AR,No Germline
+PA00009200,53.8,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033790,61.4,Untreated,Healthy,Carlos,Female,Unknown,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033792,50.1,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033798,71.9,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00033801,63.6,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00051807,59.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00051808,45.9,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00051782,45.8,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00051191,50.4,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003814,77,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Positive,FANCD2,AR,No Germline
+PA00003831,76.3,Untreated,Healthy,Carlos,Male,Unknown,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003842,72.7,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003872,69.4,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00003873,79.7,Untreated,Healthy,Carlos,Male,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00003885,69.7,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033807,68.6,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00009314,78.5,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Positive,MUTYH,AR,No Germline
+PA00009319,59.8,Untreated,Healthy,Carlos,Female,Black,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033809,68.8,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00009346,68.2,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Positive,USP45,?,No Germline
+PA00009347,72.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00009349,74.7,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033811,69.2,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Positive,FAT1;FAT1,?;?,No Germline
+PA00009355,65.9,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00009357,68.4,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033813,67.3,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033816,62.8,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033828,72.2,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033844,75.4,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00033846,69,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00033847,63.9,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00033851,60.5,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00051248,56.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00051249,64.5,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00051758,53.6,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00004282,57.3,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00004376,58.3,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00004410,55,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00004444,82.2,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00004572,73.2,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,"",None,No Germline,Negative,Negative,"",No Germline
+PA00004634,41.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,"",None,No Germline,Negative,Negative,"",No Germline
+PA00004635,39.8,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00004652,76.8,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,Missing,Missing,Missing,"",Missing
+PA00004984,79.9,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,Never,None,No Germline,Negative,Negative,"",No Germline
+PA00005092,62.3,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,"",None,No Germline,Negative,Negative,"",No Germline
+PA00005116,44.4,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00005117,34.1,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00005121,58,Untreated,Healthy,Carlos,Female,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00005122,34.4,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+PA00013527,47.4,Untreated,Healthy,Carlos,Male,White,Not Hispanic or Latino,"",None,Missing,Missing,Missing,"",Missing
+1123912,82.12183436,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Never,Lung/Mesothelioma,Missing,Missing,Missing,"",Missing
+1967684,59.44421629,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Lung/Mesothelioma,No Germline,Negative,Negative,"",No Germline
+2158430,76.61054073,Carboplatin,Carboplatin,MSK,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,Negative,Negative,"",No Germline
+2168630,66.16016427,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,Negative,Negative,"",No Germline
+72938,84.84052019,Carboplatin,Carboplatin,MSK,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,Negative,Negative,"",No Germline
+1020003,54,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1030005,61,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1040005,69,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1090002,66,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1100003,73,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1180001,69,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1240001,70,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1250005,78,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1350004,71,Carboplatin,Carboplatin,G1 Therapeutics,Male,Asian,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1350006,72,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1350008,66,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1540001,70,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1680001,69,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+1720001,67,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9130001,67,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9130003,72,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9230001,39,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9240002,64,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9240005,68,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9330001,64,Carboplatin,Carboplatin,G1 Therapeutics,Female,Hispanic,Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9350001,83,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9350003,57,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9350004,66,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9510002,56,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9510004,67,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9510008,68,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+9510010,61,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+10125003,71,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+10175002,69,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+10175003,74,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+10305005,78,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+10305007,64,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+10315001,68,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12125001,75,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12155003,66,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12155006,61,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12155007,68,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12215003,52,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12215004,65,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12225001,75,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Unknown,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12275002,58,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12395001,57,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12395004,59,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12415002,45,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12425001,65,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12435002,66,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12435003,53,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12445001,63,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12465001,63,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12465004,61,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12465005,54,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12525002,48,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12525003,69,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12555008,53,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12555009,59,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12565001,65,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12585001,69,Carboplatin,Carboplatin,G1 Therapeutics,Female,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12585002,61,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+12595004,71,Carboplatin,Carboplatin,G1 Therapeutics,Male,White,Not Hispanic or Latino,Unknown,Lung/Mesothelioma,No Germline,,,,No Germline
+277626,66.29705681,Talazoparib,PARPi,MSK,Female,Unknown,Unknown,Never,Esophagus,No Germline,Negative,Negative,"",No Germline
+1325756,58.50513347,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Colon/Rectum,HRD Germline,Positive,ATM,AD,ATM
+1781724,52.18069815,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Colon/Rectum,Other Germline,Positive,ERCC3;APC,AR;AD,Other Germline
+2069163,82.770705,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Cancer of Unknown Primary,No Germline,Negative,Negative,"",No Germline
+831409,61.42368241,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Cancer of Unknown Primary,HRD Germline,Positive,BRCA1,AD,BRCA1
+1463493,78.35728953,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Never,Breast,HRD Germline,Positive,BRCA1,AD,BRCA1
+1561639,47.67693361,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Breast,No Germline,Negative,Negative,"",No Germline
+1627016,55.94250513,Talazoparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Never,Breast,HRD Germline,Positive,ATM,AD,ATM
+1697854,51.45516769,Talazoparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Breast,HRD Germline,Positive,BRCA1,AD,BRCA1
+1728092,42.78439425,Talazoparib,PARPi,MSK,Female,Unknown,Not Hispanic or Latino,Never,Breast,No Germline,Negative,Negative,"",No Germline
+1743659,51.12936345,Olaparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Breast,No Germline,Negative,Negative,"",No Germline
+1818903,31.95893224,Talazoparib,PARPi,MSK,Female,Hispanic,Hispanic or Latino,Never,Breast,HRD Germline,Positive,ATM,AD,ATM
+191197,52.09856263,Olaparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Breast,HRD Germline,Positive,CHEK2,AD,CHEK2
+2017905,34.78439425,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Never,Breast,HRD Germline,Positive,BRCA1,AD,BRCA1
+2030544,64.10130048,Talazoparib,PARPi,MSK,Female,White,Not Hispanic or Latino,Previous,Breast,HRD Germline,Positive,BRCA2,AD,BRCA2
+2080542,50.92128679,Talazoparib,PARPi,MSK,Female,Black,Not Hispanic or Latino,Never,Breast,HRD Germline,Positive,BRCA1,AD,BRCA1
+2091722,37.53045859,Talazoparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Breast,HRD Germline,Positive,BRCA1,AD,BRCA1
+2134407,62.89938398,Talazoparib,PARPi,MSK,Male,Hispanic,Hispanic or Latino,Previous,Breast,HRD Germline,Positive,BRCA2;ERCC3,AD;AR,BRCA2
+251740,59.92881588,Talazoparib,PARPi,MSK,Female,Asian,Not Hispanic or Latino,Never,Breast,HRD Germline,Positive,BRCA2,AD,BRCA2
+1631988,76.54483231,Talazoparib,PARPi,MSK,Male,White,Not Hispanic or Latino,Previous,Bladder,HRD Germline,Positive,BRCA2,AD,BRCA2
+U10-WU-025,64.8,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Previous,Ovary/Uterus,HRD Germline,Positive,BRCA2;TP53;MSH2,AD;AD;AD,BRCA2
+U10-WU-026,73.1,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+U10-WU-027,57.2,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,HRD Germline,Positive,BRCA2,AD,BRCA2
+U10-WU-031,60.2,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,Missing,Missing,Missing,"",Missing
+U10-WU-032,65.4,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+U10-WU-078,66.2,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,Other Germline,Positive,PALB2,AD,Other Germline
+U10-WU-084,50.4,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,No Germline,Negative,Negative,"",No Germline
+U10-WU-090,83.8,Carboplatin,Carboplatin,Ovarian,Female,White,Non-Hispanic,Never,Ovary/Uterus,Missing,Missing,Missing,"",Missing
