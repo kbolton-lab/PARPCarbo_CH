@@ -45,7 +45,7 @@ library(BSgenome.Hsapiens.UCSC.hg38)
 source("utils/toolbox.R")
 
 data_file_path <- "data/"
-figures_save_path <- "final_figures/"
+figures_save_path <- "figures/"
 ```
 
 ## Load Data
@@ -2248,11 +2248,11 @@ extdata_fig2 <- df_to_plot %>%
     scale_y_continuous(trans = scales::pseudo_log_trans(0.001), breaks = c(-0.05, -0.01, -0.005, 0, 0.005, 0.01, 0.05), limits = c(NA, 8)) +
     facet_wrap(Gene_Class ~ VAF_Category) +
     do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == "<=2%") %>% filter(Gene_Class == "DDR"), 6, 1, 2, model_growth_rate_class_lessthan2$p.value[3], model_growth_rate_class_lessthan2$p.stars[3], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == "<=2%") %>% filter(Gene_Class == "DDR"), 6.5, 1, 3, model_growth_rate_class_lessthan2$p.value[4], model_growth_rate_class_lessthan2$p.stars[4], show_values = TRUE, hide_ns = TRUE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == "<=2%") %>% filter(Gene_Class == "DDR"), 7, 2, 3, model_growth_rate_class_lessthan2$p.value[6], model_growth_rate_class_lessthan2$p.stars[6], show_values = TRUE, hide_ns = TRUE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == ">2%") %>% filter(Gene_Class == "DDR"), 6, 1, 2, model_growth_rate_class_greaterthan2$p.value[3], model_growth_rate_class_greaterthan2$p.stars[3], show_values = TRUE, hide_ns = TRUE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == ">2%") %>% filter(Gene_Class == "DDR"), 6.5, 1, 3, model_growth_rate_class_greaterthan2$p.value[4], model_growth_rate_class_greaterthan2$p.stars[4], show_values = TRUE, hide_ns = TRUE)) +
-    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == ">2%") %>% filter(Gene_Class == "DDR"), 7, 2, 3, model_growth_rate_class_greaterthan2$p.value[6], model_growth_rate_class_greaterthan2$p.stars[6], show_values = TRUE, hide_ns = TRUE))
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == "<=2%") %>% filter(Gene_Class == "DDR"), 6.5, 1, 3, model_growth_rate_class_lessthan2$p.value[4], model_growth_rate_class_lessthan2$p.stars[4], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == "<=2%") %>% filter(Gene_Class == "DDR"), 7, 2, 3, model_growth_rate_class_lessthan2$p.value[6], model_growth_rate_class_lessthan2$p.stars[6], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == ">2%") %>% filter(Gene_Class == "DDR"), 6, 1, 2, model_growth_rate_class_greaterthan2$p.value[3], model_growth_rate_class_greaterthan2$p.stars[3], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == ">2%") %>% filter(Gene_Class == "DDR"), 6.5, 1, 3, model_growth_rate_class_greaterthan2$p.value[4], model_growth_rate_class_greaterthan2$p.stars[4], show_values = TRUE, hide_ns = TRUE, textsize = 6)) +
+    do.call(geom_signif, default_sig_data(df_to_plot %>% filter(VAF_Category == ">2%") %>% filter(Gene_Class == "DDR"), 7, 2, 3, model_growth_rate_class_greaterthan2$p.value[6], model_growth_rate_class_greaterthan2$p.stars[6], show_values = TRUE, hide_ns = TRUE, textsize = 6))
 
 extdata_fig2
 pdf(paste0(figures_save_path, "ExtFigure2_GrowthRates_VAFCategory.pdf"), width = 14, height = 10)
@@ -3301,7 +3301,7 @@ supp_fig1a <- rbind(
                                     "Cytotoxic Therapy",
                                     "PARP Inhibitor")),
         Classification = factor(Classification, levels = c("DDR CH", "TP53 CH", "PPM1D CH", "CHEK2 CH")),
-        p.label = ifelse(p.stars != "", format(p.value, digits = 2), "")
+        p.label = ifelse(p.stars != "", paste0("P=",format(p.value, digits = 2)), "")
     ) %>%
     select(term, Classification, estimate, std.error, conf.low, conf.high, p.value, p.stars, p.label) %>%
     filter(!(term == "Radionucleotide Therapy" & Classification == "TP53 CH")) %>% # Remove Radionucleotide Therapy for TP53 CH because the confidence interval is too wide to be visualized on the same plot
@@ -3359,7 +3359,7 @@ supp_fig1b <- rbind(
         ),
         term = factor(term, levels = c("PARP Inhibitor\n(Adjusted for\nAmount of Cytotoxic\nTherapy Recieved)", "PARP Inhibitor\n(Adjusted for\nCytotoxic Therapy Class)")),
         Classification = factor(Classification, levels = c("DDR CH", "TP53 CH", "PPM1D CH", "CHEK2 CH")),
-        p.label = ifelse(p.stars != "", format(p.value, digits = 2), ""),
+        p.label = ifelse(p.stars != "", paste0("P=",format(p.value, digits = 2)), "")
     ) %>%
     select(term, Classification, estimate, std.error, conf.low, conf.high, p.value, p.stars, p.label) %>%
     ggplot(
